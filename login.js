@@ -140,6 +140,24 @@
     return '<div class="rank-empty"><i class="fa-solid ' + icon + '"></i>' + text + "</div>";
   }
 
+  /**
+   * Giriş ekranındaki listeler üye verisi okuyor, ama profiles tablosu
+   * RLS gereği yalnızca giriş yapmışlara açık — anonim ziyaretçiye
+   * sunucu boş liste döndürüyor.
+   *
+   * Bu doğru davranış (üye listesi internete açık olmamalı) ama
+   * "Henüz kayıtlı üye yok" yazmak yalan olurdu: üye var, ziyaretçi
+   * göremiyor. Listeler önce buraya sorup dürüst mesaj gösteriyor.
+   */
+  function girisGerekliMi() {
+    return !YKS.Auth.isLoggedIn();
+  }
+
+  function girisGerekliKutu(metin) {
+    return '<div class="rank-empty"><i class="fa-solid fa-lock"></i>' +
+      (metin || "Görmek için giriş yap.") + "</div>";
+  }
+
   /* ---------- 2a) En çok net sahipleri ---------- */
 
   /**
@@ -183,6 +201,11 @@
   function renderTopNets() {
     var container = document.getElementById("nets-list");
     if (!container) return;
+
+    if (girisGerekliMi()) {
+      container.innerHTML = girisGerekliKutu("Sıralamayı görmek için giriş yap.");
+      return;
+    }
 
     var label = YKS.Subjects.typeLabel(netType) || netType.toUpperCase();
     var rows = topNetsOf(netType);
@@ -237,6 +260,12 @@
     var container = document.getElementById("active-list");
     var sub = document.getElementById("active-count");
     if (!container) return;
+
+    if (girisGerekliMi()) {
+      if (sub) sub.textContent = "Giriş gerekli";
+      container.innerHTML = girisGerekliKutu("Sıralamayı görmek için giriş yap.");
+      return;
+    }
 
     var rows = YKS.Users.all()
       .map(activityOf)
@@ -307,6 +336,12 @@
     var container = document.getElementById("longest-list");
     var sub = document.getElementById("longest-count");
     if (!container) return;
+
+    if (girisGerekliMi()) {
+      if (sub) sub.textContent = "Giriş gerekli";
+      container.innerHTML = girisGerekliKutu("Sıralamayı görmek için giriş yap.");
+      return;
+    }
 
     var rows = YKS.Users.all()
       .map(longestSessionOf)
@@ -385,6 +420,12 @@
     var sayac = document.getElementById("apps-count");
     if (!box) return;
 
+    if (girisGerekliMi()) {
+      if (sayac) sayac.textContent = "Giriş gerekli";
+      box.innerHTML = girisGerekliKutu("Üyeleri görmek için giriş yap.");
+      return;
+    }
+
     var list = YKS.Users.all().slice().sort(function (a, b) {
       return (b.createdAt || 0) - (a.createdAt || 0);
     }).slice(0, 8);
@@ -409,6 +450,13 @@
 
     var container = document.getElementById("members-list");
     var sub = document.getElementById("members-count");
+
+    if (girisGerekliMi()) {
+      if (sub) sub.textContent = "Giriş gerekli";
+      container.innerHTML = girisGerekliKutu("Üye listesini görmek için giriş yap.");
+      return;
+    }
+
     if (sub) sub.textContent = list.length ? list.length + " üye" : "Kayıt yok";
 
     if (!list.length) {
