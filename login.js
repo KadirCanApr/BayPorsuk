@@ -141,16 +141,18 @@
   }
 
   /**
-   * Giriş ekranındaki listeler üye verisi okuyor, ama profiles tablosu
-   * RLS gereği yalnızca giriş yapmışlara açık — anonim ziyaretçiye
-   * sunucu boş liste döndürüyor.
+   * Giriş ekranındaki listeler üye verisi okuyor.
    *
-   * Bu doğru davranış (üye listesi internete açık olmamalı) ama
-   * "Henüz kayıtlı üye yok" yazmak yalan olurdu: üye var, ziyaretçi
-   * göremiyor. Listeler önce buraya sorup dürüst mesaj gösteriyor.
+   * supabase/acik-liderlik.sql çalıştırıldıysa bu veri ziyaretçiye de
+   * açıktır ve listeler normal görünür. Çalıştırılmadıysa RLS boş liste
+   * döndürür — o zaman "Henüz kayıtlı üye yok" yazmak yalan olurdu
+   * (üye var, ziyaretçi göremiyor), bunun yerine giriş daveti gösterilir.
+   *
+   * Bu yüzden ölçüt "giriş yapılmadı" değil, "giriş yapılmadı VE veri
+   * gelmedi" — iki kurulumda da doğru davranır.
    */
   function girisGerekliMi() {
-    return !YKS.Auth.isLoggedIn();
+    return !YKS.Auth.isLoggedIn() && YKS.Users.all().length === 0;
   }
 
   function girisGerekliKutu(metin) {

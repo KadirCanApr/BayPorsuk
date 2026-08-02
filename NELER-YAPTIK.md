@@ -49,6 +49,24 @@ git add . ; git commit -m "ne yaptiysan yaz" ; git push
 Bunlar **2. aşamada** taşınacak. Şu an herkes kendi tarayıcısındakini
 görüyor; veritabanı tabloları hazır ama kod henüz bağlanmadı.
 
+### 🌐 Herkese açık olanlar (bilinçli karar)
+
+`supabase/acik-liderlik.sql` çalıştırıldıysa giriş ekranındaki dört
+panel ziyaretçiye de görünür. Bunun için şunlar internete açıktır:
+
+- Üye adı, kullanıcı adı, yaş, sınav alanı, avatar, banner, açıklama
+- Çalışma kayıtları: denemeler, süreler, dersler, hedefler, rozetler
+
+**Gizli kalanlar:** günlük (`user_journal`), mesajlar, arkadaşa özel
+gönderiler, e-posta adresleri, şifreler.
+
+Geri almak istersen o dosyanın sonundaki blok var.
+
+**Neden gerekti:** RLS'ten sonra paneller boş kalıyordu ama "Henüz
+kayıtlı üye yok" yazıyordu — üye vardı, ziyaretçi göremiyordu. İki
+seçenek vardı: listeleri üye alanına taşımak ya da herkese açmak.
+İkincisi seçildi.
+
 ### 🔓 Açık kalan güvenlik konusu
 
 E-posta doğrulaması kapalı (ücretsiz katmanda mail göndericisi

@@ -531,39 +531,61 @@
       if (!YKS.SB || !YKS.Cache.benimId) return Promise.resolve(false);
       var id = YKS.Cache.benimId;
 
-      return Promise.all([
-        YKS.SB.from("user_data").select("data").eq("user_id", id).maybeSingle(),
-        YKS.SB.from("user_journal").select("entries").eq("user_id", id).maybeSingle()
-      ]).then(function (r) {
-        var profil = YKS.Users.byId(id);
-        if (!profil) return false;
+      /* profilleriYukle zaten herkesin user_data'sını getirdi;
+         burada yalnızca günlük ekleniyor — o tablo sahibine özel
+         olduğu için toplu çekilemiyor. */
+      return YKS.SB.from("user_journal").select("entries").eq("user_id", id).maybeSingle()
+        .then(function (r) {
+          var profil = YKS.Users.byId(id);
+          if (!profil) return false;
 
-        var d = (r[0].data && r[0].data.data) || {};
-        if (typeof d !== "object" || Array.isArray(d)) d = {};
-
-        var g = (r[1].data && r[1].data.entries) || [];
-        d.gunluk = Array.isArray(g) ? g : [];
-
-        profil.data = d;
-        return true;
-      });
+          if (!profil.data || typeof profil.data !== "object") profil.data = {};
+          var g = (r.data && r.data.entries) || [];
+          profil.data.gunluk = Array.isArray(g) ? g : [];
+          return true;
+        });
     },
 
-    /** Profilleri sunucudan tazeler */
+    /**
+     * Profilleri ve herkesin çalışma verisini sunucudan tazeler.
+     *
+     * user_data da çekiliyor çünkü giriş ekranındaki liderlik
+     * tabloları (En Çok Net, En Aktif, En Uzun Ders) BAŞKA
+     * kullanıcıların denemelerini/sürelerini okuyor. Yalnızca kendi
+     * verimizi çekseydik o listeler boş kalırdı.
+     *
+     * Günlük burada YOK: ayrı tabloda ve yalnızca sahibine açık.
+     */
     profilleriYukle: function () {
       if (!YKS.SB) return Promise.resolve(false);
 
-      return YKS.SB.from("profiles")
-        .select("id, username, full_name, age, exam_field, description, avatar_url, banner_url, role, created_at, updated_at")
-        .order("created_at", { ascending: true })
-        .then(function (r) {
-          if (r.error) {
-            console.error("[YKS] Profiller yüklenemedi:", r.error.message);
-            return false;
-          }
-          YKS.Cache.profiller = (r.data || []).map(YKS.Cache.profilCevir);
-          return true;
+      return Promise.all([
+        YKS.SB.from("profiles")
+          .select("id, username, full_name, age, exam_field, description, avatar_url, banner_url, role, created_at, updated_at")
+          .order("created_at", { ascending: true }),
+        YKS.SB.from("user_data").select("user_id, data")
+      ]).then(function (r) {
+        if (r[0].error) {
+          console.error("[YKS] Profiller yüklenemedi:", r[0].error.message);
+          return false;
+        }
+
+        /* Çalışma verisi kimliğe göre eşlensin */
+        var veriler = {};
+        if (!r[1].error) {
+          (r[1].data || []).forEach(function (satir) {
+            var d = satir.data;
+            veriler[satir.user_id] = (d && typeof d === "object" && !Array.isArray(d)) ? d : {};
+          });
+        }
+
+        YKS.Cache.profiller = (r[0].data || []).map(function (row) {
+          var profil = YKS.Cache.profilCevir(row);
+          profil.data = veriler[row.id] || {};
+          return profil;
         });
+        return true;
+      });
     },
 
     /**
@@ -622,11 +644,14 @@
           YKS.Cache.oturum = (s.data && s.data.session) || null;
           YKS.Cache.benimId = YKS.Cache.oturum ? YKS.Cache.oturum.user.id : null;
 
-          /* Oturum yoksa profilleri çekmenin anlamı yok:
-             RLS zaten boş döndürür. */
-          if (!YKS.Cache.oturum) return true;
+          /* Profiller giriş yapılmamışken de çekiliyor: giriş
+             ekranındaki liderlik panelleri ziyaretçiye de gösteriliyor
+             (bkz. supabase/acik-liderlik.sql). O politika uygulanmadıysa
+             RLS boş liste döndürür ve paneller "giriş yap" der —
+             iki durumda da çalışır. */
           return YKS.Cache.profilleriYukle().then(function () {
-            return YKS.Cache.verimiYukle();
+            /* Kişisel veri yalnızca giriş yapmışta anlamlı */
+            return YKS.Cache.oturum ? YKS.Cache.verimiYukle() : true;
           });
         })
         .then(domSozu)
