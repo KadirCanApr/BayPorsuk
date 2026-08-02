@@ -1,0 +1,478 @@
+/* ============================================================
+   Aksiyom — netler.css
+   TYT / AYT Netleri modülü: net tablosu ve ders özet kartları
+   ============================================================ */
+
+/* ---------- 1) Sayfa Düzeni --------------------------------- */
+.nets-page {
+  min-height: 100dvh;
+  padding: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.nets-container {
+  width: 100%;
+  max-width: 1280px;
+}
+
+/* ---------- 2) Üst Bar -------------------------------------- */
+.nets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-radius: var(--r-lg);
+  margin-bottom: 24px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.nets-header .header-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 210px;
+}
+
+.nets-header .header-title > i { font-size: 24px; color: var(--brand); }
+.nets-header .header-title h1 { font-size: 22px; margin: 0; letter-spacing: -0.02em; }
+
+.header-sub {
+  display: block;
+  font-size: 12.5px;
+  color: var(--faint);
+}
+
+.nets-header .header-side {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ---------- 3) İstatistik Kartları -------------------------- */
+.net-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.net-stat-card {
+  position: relative;
+  padding: 20px;
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+
+.net-stat-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand);
+  box-shadow: 0 8px 24px rgba(91, 108, 255, 0.2);
+}
+
+.net-stat-card .stat-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 22px;
+  color: var(--brand);
+  opacity: 0.35;
+}
+
+.net-stat-card .stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+  margin-bottom: 8px;
+  padding-right: 34px;
+}
+
+.net-stat-card .stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.net-stat-card .stat-value small {
+  font-size: 13px;
+  font-weight: 500;
+  -webkit-text-fill-color: var(--faint);
+  color: var(--faint);
+}
+
+.net-stat-card .stat-note {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.net-stat-card .stat-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.net-stat-card .stat-delta.up {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.net-stat-card .stat-delta.down {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.net-stat-card .stat-delta.flat {
+  background: rgba(107, 114, 128, 0.15);
+  color: #9ca3af;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+/* ---------- 4) Araç Çubuğu ---------------------------------- */
+.nets-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--r-lg);
+  margin-bottom: 22px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  flex-wrap: wrap;
+}
+
+.nets-toolbar .toolbar-search { flex: 1 1 220px; min-width: 180px; }
+.nets-toolbar .toolbar-select { flex: 0 1 200px; }
+
+.nets-toolbar .toolbar-count {
+  font-size: 13px;
+  color: var(--faint);
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+/* ---------- 5) Kart Kabuğu ---------------------------------- */
+.net-card {
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  margin-bottom: 22px;
+}
+
+.net-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(91, 108, 255, 0.09), rgba(162, 89, 255, 0.05));
+  border-bottom: 1px solid var(--stroke);
+  flex-wrap: wrap;
+}
+
+.net-card-head i { color: var(--brand); }
+.net-card-head h3 { font-size: 15.5px; font-weight: 600; margin: 0; }
+.net-card-head .head-note { font-size: 12px; color: var(--faint); margin-left: auto; }
+
+/* ---------- 6) Net Tablosu ---------------------------------- */
+/* Ders sayısı fazla olduğu için tablo yatay kayar;
+   deneme sütunu sola sabitlenir. */
+.table-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+.net-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.net-table th,
+.net-table td {
+  padding: 11px 12px;
+  text-align: center;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.net-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgba(17, 19, 30, 0.96);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+  border-bottom: 1px solid var(--stroke);
+}
+
+.net-table thead th .th-max {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--faint);
+  opacity: 0.7;
+}
+
+/* Sola sabitlenen deneme sütunu */
+.net-table .sticky-col {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  text-align: left;
+  background: rgba(17, 19, 30, 0.96);
+  min-width: 190px;
+  border-right: 1px solid var(--stroke);
+}
+
+.net-table thead .sticky-col { z-index: 4; }
+
+.net-table tbody tr:hover td { background: rgba(91, 108, 255, 0.07); }
+.net-table tbody tr:hover .sticky-col { background: rgba(30, 33, 50, 0.98); }
+
+.net-table .exam-cell strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: normal;
+  word-break: break-word;
+}
+
+.net-table .exam-cell span {
+  font-size: 11px;
+  color: var(--faint);
+}
+
+/* Net hücreleri — dersin soru sayısına oranla renklenir */
+.net-cell { color: var(--muted); font-weight: 500; }
+.net-cell.zero { color: var(--faint); opacity: 0.55; }
+.net-cell.weak { color: #f87171; }
+.net-cell.mid { color: #fbbf24; }
+.net-cell.good { color: #34d399; }
+.net-cell.best { font-weight: 700; }
+
+/* Satırın en yüksek ve en düşük dersi */
+.net-cell.row-best { background: rgba(16, 185, 129, 0.1); }
+.net-cell.row-worst { background: rgba(239, 68, 68, 0.09); }
+
+.net-table .total-col {
+  font-weight: 600;
+  color: var(--brand);
+  background: rgba(91, 108, 255, 0.07);
+  border-left: 1px solid var(--stroke);
+}
+
+.net-table thead .total-col { color: #bcc4ff; }
+
+/* Özet satırları */
+.net-table tfoot td {
+  background: rgba(255, 255, 255, 0.03);
+  font-weight: 600;
+  color: var(--text);
+  border-top: 1px solid var(--stroke);
+  border-bottom: 0;
+}
+
+.net-table tfoot .sticky-col {
+  background: rgba(24, 27, 42, 0.98);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+}
+
+.net-table tfoot tr.avg-row td { color: #bcc4ff; }
+.net-table tfoot tr.best-row td { color: #8ceed3; }
+
+/* ---------- 7) Ders Özet Kartları --------------------------- */
+.subject-net-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 14px;
+  padding: 18px 20px 20px;
+}
+
+.subject-net-card {
+  padding: 15px;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--stroke);
+  transition: transform var(--t-fast), border-color var(--t-fast);
+}
+
+.subject-net-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(91, 108, 255, 0.4);
+}
+
+.subject-net-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 10px;
+}
+
+.subject-net-head i {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(91, 108, 255, 0.16);
+  color: var(--brand);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.subject-net-head strong {
+  font-size: 13.5px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.subject-net-head .max-tag {
+  font-size: 10.5px;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.subject-net-value {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.subject-net-value small { font-size: 12px; font-weight: 400; color: var(--faint); }
+
+.subject-net-bar {
+  margin-top: 10px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.subject-net-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+}
+
+.subject-net-card.good .subject-net-bar span { background: linear-gradient(90deg, var(--ok), #6ee7c8); }
+.subject-net-card.weak .subject-net-bar span { background: linear-gradient(90deg, var(--danger), #ff8fa3); }
+
+.subject-net-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.subject-net-meta .dot-sep { color: var(--faint); }
+
+.subject-net-meta .delta { font-weight: 600; }
+.subject-net-meta .delta.up { color: #34d399; }
+.subject-net-meta .delta.down { color: #f87171; }
+.subject-net-meta .delta.flat { color: #9ca3af; }
+
+/* Son denemelerin küçük çizgisi */
+.spark {
+  display: block;
+  width: 100%;
+  height: 32px;
+  margin-top: 10px;
+}
+
+.spark .spark-line {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.spark .spark-area { fill: rgba(91, 108, 255, 0.14); stroke: none; }
+.spark .spark-dot { fill: var(--brand-2); }
+
+/* ---------- 8) Boş Durum ------------------------------------ */
+.empty-nets {
+  text-align: center;
+  padding: 72px 24px;
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px dashed var(--stroke-strong);
+}
+
+.empty-nets i { font-size: 44px; color: var(--brand); opacity: 0.5; margin-bottom: 16px; }
+.empty-nets h3 { font-size: 19px; margin-bottom: 8px; }
+.empty-nets p { color: var(--muted); font-size: 13.5px; margin-bottom: 20px; }
+
+/* ---------- 9) Responsive ----------------------------------- */
+@media (max-width: 768px) {
+  .nets-page { padding: 20px 16px; }
+
+  .nets-header { flex-direction: column; align-items: stretch; }
+  .nets-header .header-title { justify-content: center; text-align: center; }
+  .nets-header .header-side { justify-content: center; }
+  .nets-header .header-side .btn-x { flex: 1; }
+
+  .net-stats { grid-template-columns: 1fr; }
+
+  .nets-toolbar { flex-direction: column; align-items: stretch; }
+  .nets-toolbar .toolbar-select,
+  .nets-toolbar .btn-x { width: 100%; }
+  .nets-toolbar .toolbar-count { margin-left: 0; text-align: center; }
+
+  .net-table .sticky-col { min-width: 150px; }
+  .net-table th, .net-table td { padding: 9px 10px; }
+
+  .subject-net-grid { grid-template-columns: 1fr; padding: 14px; }
+}

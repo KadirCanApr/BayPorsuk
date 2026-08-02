@@ -1,0 +1,408 @@
+/* ============================================================
+   Aksiyom — gunluk.css
+   Günlüğüm modülü: defter sayfası görünümlü günlük kayıtları
+   ============================================================ */
+
+/* ---------- 1) Sayfa Düzeni --------------------------------- */
+.gunluk-page {
+  min-height: 100dvh;
+  padding: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.gunluk-container {
+  width: 100%;
+  max-width: 900px;
+}
+
+/* ---------- 2) Üst Bar -------------------------------------- */
+.gunluk-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-radius: var(--r-lg);
+  margin-bottom: 20px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ---------- 3) Özet Şeridi ---------------------------------- */
+.gunluk-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.gunluk-stat {
+  padding: 16px 18px;
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform var(--t-fast), border-color var(--t-fast);
+}
+
+.gunluk-stat:hover {
+  transform: translateY(-2px);
+  border-color: var(--stroke-strong);
+}
+
+.gunluk-stat .label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--faint);
+  margin-bottom: 6px;
+}
+
+.gunluk-stat .label i { color: var(--brand); font-size: 12px; }
+
+.gunluk-stat .value {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.gunluk-stat .note {
+  font-size: 11.5px;
+  color: var(--faint);
+  margin-top: 2px;
+}
+
+/* Seri kartı sıcak renkte dursun */
+.gunluk-stat.streak .value { color: #ffc046; }
+.gunluk-stat.streak .label i { color: #ffc046; }
+
+/* ---------- 4) Araç Çubuğu ---------------------------------- */
+.gunluk-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--r-lg);
+  margin-bottom: 20px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  flex-wrap: wrap;
+}
+
+.gunluk-toolbar .toolbar-search {
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
+.gunluk-toolbar .toolbar-month,
+.gunluk-toolbar .toolbar-sort {
+  flex: 0 1 170px;
+}
+
+.gunluk-toolbar .toolbar-count {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+/* ---------- 5) Günlük Sayfası ------------------------------- */
+.gunluk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Kart bir defter yaprağı gibi: solda dikiş payı, üstünde çizgiler */
+.gunluk-entry {
+  position: relative;
+  display: flex;
+  gap: 18px;
+  padding: 22px 24px 20px 22px;
+  border-radius: var(--r-lg);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+}
+
+.gunluk-entry:hover {
+  transform: translateY(-2px);
+  border-color: rgba(91, 108, 255, 0.35);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
+}
+
+/* Defter dikişi */
+.gunluk-entry::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 88px;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(255, 107, 157, 0.35), transparent);
+}
+
+/* Sol sütun: tarih damgası */
+.gunluk-date {
+  flex: none;
+  width: 66px;
+  text-align: center;
+  padding-top: 2px;
+}
+
+.gunluk-day {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gunluk-month-label {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 2px;
+  text-transform: capitalize;
+}
+
+.gunluk-weekday {
+  font-size: 10.5px;
+  color: var(--faint);
+  margin-top: 1px;
+}
+
+.gunluk-mood {
+  margin-top: 8px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Sağ sütun: içerik */
+.gunluk-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.gunluk-entry-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.gunluk-entry h3 {
+  font-size: 18px;
+  margin: 0;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.gunluk-actions {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+
+.gunluk-action {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.gunluk-action:hover {
+  color: var(--text);
+  border-color: var(--stroke-strong);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.gunluk-action.danger:hover {
+  color: #ffb3c2;
+  border-color: rgba(255, 92, 122, 0.45);
+  background: rgba(255, 92, 122, 0.12);
+}
+
+/* Etiket satırı: ders rozetleri + süre */
+.gunluk-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.gunluk-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: #b9c2ff;
+  background: rgba(91, 108, 255, 0.12);
+  border: 1px solid rgba(91, 108, 255, 0.3);
+}
+
+.gunluk-tag.time {
+  color: #5ae4c0;
+  background: rgba(47, 212, 167, 0.12);
+  border-color: rgba(47, 212, 167, 0.32);
+}
+
+.gunluk-tag i { font-size: 10px; }
+
+/* Yazı alanı — çizgili defter hissi */
+.gunluk-body {
+  position: relative;
+  font-size: 14px;
+  line-height: 30px;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 4px 2px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 29px,
+    rgba(255, 255, 255, 0.055) 29px,
+    rgba(255, 255, 255, 0.055) 30px
+  );
+  background-position: 0 4px;
+}
+
+/* Uzun yazılar katlanır, "devamını oku" ile açılır */
+.gunluk-body.clamped {
+  max-height: 180px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
+}
+
+.gunluk-more {
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--brand);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.gunluk-more:hover { color: var(--brand-2); }
+
+.gunluk-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--stroke);
+  font-size: 11.5px;
+  color: var(--faint);
+}
+
+.gunluk-foot i { margin-right: 5px; color: var(--brand); }
+
+/* ---------- 6) Ruh Hali Seçici (modal) ---------------------- */
+.mood-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mood-btn {
+  flex: 1 1 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.mood-btn:hover {
+  color: var(--text);
+  border-color: var(--stroke-strong);
+  transform: translateY(-2px);
+}
+
+.mood-btn.active {
+  color: #fff;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  box-shadow: 0 6px 18px rgba(91, 108, 255, 0.32);
+}
+
+.mood-face {
+  font-size: 22px;
+  line-height: 1;
+}
+
+/* Günlük metni yazarken de çizgili his */
+.gunluk-textarea {
+  line-height: 28px;
+  min-height: 240px;
+}
+
+/* ---------- 7) Mobil Uyum ----------------------------------- */
+@media (max-width: 768px) {
+  .gunluk-page { padding: 18px 14px; }
+
+  .gunluk-header {
+    padding: 16px 18px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .gunluk-toolbar .toolbar-count { margin-left: 0; }
+
+  .gunluk-entry {
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px;
+  }
+
+  .gunluk-entry::before { display: none; }
+
+  .gunluk-date {
+    width: auto;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    text-align: left;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--stroke);
+  }
+
+  .gunluk-day { font-size: 24px; }
+  .gunluk-mood { margin-top: 0; margin-left: auto; }
+}

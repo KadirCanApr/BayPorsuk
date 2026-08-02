@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Supabase Tanı · Bay Porsuk</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="../sb.js"></script>
+
+  <style>
+    .tani-page { min-height: 100dvh; padding: 32px; display: flex; justify-content: center; }
+    .tani-box { width: 100%; max-width: 780px; }
+
+    .tani-head {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 24px; margin-bottom: 20px;
+      border-radius: var(--r-lg); background: var(--glass);
+      border: 1px solid var(--stroke);
+    }
+    .tani-head i { font-size: 24px; color: var(--brand); }
+    .tani-head h1 { font-size: 21px; }
+
+    .tani-grup {
+      margin-bottom: 16px; border-radius: var(--r-lg);
+      background: var(--glass); border: 1px solid var(--stroke); overflow: hidden;
+    }
+    .tani-grup > h2 {
+      font-size: 13px; padding: 13px 18px; margin: 0;
+      border-bottom: 1px solid var(--stroke); color: var(--muted);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+
+    .satir {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 11px 18px; border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 13.5px;
+    }
+    .satir:last-child { border-bottom: 0; }
+
+    .isaret {
+      width: 22px; height: 22px; flex: none; display: grid; place-items: center;
+      border-radius: 50%; font-size: 11px; margin-top: 1px;
+    }
+    .ok   .isaret { background: rgba(47,212,167,0.16); color: var(--ok); }
+    .yok  .isaret { background: rgba(255,92,122,0.16); color: var(--danger); }
+    .uyari .isaret { background: rgba(255,192,70,0.16); color: var(--warn); }
+    .bekle .isaret { background: rgba(255,255,255,0.07); color: var(--faint); }
+
+    .satir-ad { flex: 1; min-width: 0; }
+    .satir-not { display: block; font-size: 11.5px; color: var(--faint); margin-top: 2px; word-break: break-word; }
+
+    .ozet {
+      padding: 18px 22px; border-radius: var(--r-lg); margin-bottom: 20px;
+      border: 1px solid var(--stroke); font-size: 14px;
+    }
+    .ozet.iyi   { background: rgba(47,212,167,0.10); border-color: rgba(47,212,167,0.35); }
+    .ozet.kotu  { background: rgba(255,92,122,0.09); border-color: rgba(255,92,122,0.32); }
+    .ozet h3 { font-size: 16px; margin-bottom: 6px; }
+    .ozet p { margin: 0; color: var(--muted); font-size: 13px; }
+    .ozet code {
+      background: rgba(0,0,0,0.35); padding: 2px 6px;
+      border-radius: 5px; font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="tani-page">
+    <div class="tani-box">
+
+      <div class="tani-head">
+        <i class="fa-solid fa-stethoscope"></i>
+        <div style="flex:1">
+          <h1>Supabase Tanı</h1>
+          <p class="faint mb-0" id="proje-url">—</p>
+        </div>
+        <button type="button" class="btn-x btn-ghost-x" id="tekrar">
+          <i class="fa-solid fa-rotate"></i> Tekrar dene
+        </button>
+      </div>
+
+      <div id="ozet"></div>
+      <div id="sonuc"></div>
+
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    "use strict";
+
+    var YKS = window.YKS;
+    var TABLOLAR = ["profiles", "user_data", "user_journal", "announcements",
+                    "friendships", "messages", "posts", "post_likes", "post_comments"];
+    var ISLEVLER = ["is_admin", "leaderboard_study", "leaderboard_active"];
+
+    function satir(durum, ad, not) {
+      var ikon = { ok: "fa-check", yok: "fa-xmark", uyari: "fa-exclamation",
+                   bekle: "fa-ellipsis" }[durum];
+      return '<div class="satir ' + durum + '">' +
+        '<span class="isaret"><i class="fa-solid ' + ikon + '"></i></span>' +
+        '<span class="satir-ad">' + ad +
+          (not ? '<span class="satir-not">' + not + "</span>" : "") +
+        "</span></div>";
+    }
+
+    function grup(baslik, icerik) {
+      return '<div class="tani-grup"><h2>' + baslik + "</h2>" + icerik + "</div>";
+    }
+
+    function calistir() {
+      document.getElementById("proje-url").textContent =
+        YKS.SupabaseConfig ? YKS.SupabaseConfig.url : "yapılandırma yok";
+      document.getElementById("ozet").innerHTML = "";
+      document.getElementById("sonuc").innerHTML =
+        grup("Kontrol ediliyor", satir("bekle", "Sunucuya bağlanılıyor…"));
+
+      var rapor = { baglanti: [], sema: [], guvenlik: [], depolama: [] };
+      var hataSayisi = 0, uyariSayisi = 0;
+
+      function ekle(bolum, durum, ad, not) {
+        if (durum === "yok") hataSayisi++;
+        if (durum === "uyari") uyariSayisi++;
+        rapor[bolum].push(satir(durum, ad, not));
+      }
+
+      /* --- 1) Bağlantı --- */
+      if (!window.supabase || !YKS.SB) {
+        ekle("baglanti", "yok", "supabase-js yüklenemedi",
+             "CDN engellenmiş olabilir; internet bağlantını kontrol et.");
+        return ciz(rapor, hataSayisi, uyariSayisi);
+      }
+      ekle("baglanti", "ok", "supabase-js yüklendi");
+      ekle("baglanti", "ok", "İstemci kuruldu", YKS.SupabaseConfig.url);
+
+      return fetch(YKS.SupabaseConfig.url + "/auth/v1/health",
+                   { headers: { apikey: YKS.SupabaseConfig.key } })
+        .then(function (r) { return r.json(); })
+        .then(function (h) {
+          ekle("baglanti", "ok", "Kimlik servisi ayakta", (h.name || "GoTrue") + " " + (h.version || ""));
+        })
+        .catch(function () {
+          ekle("baglanti", "yok", "Kimlik servisine ulaşılamadı",
+               "Proje duraklatılmış olabilir — Supabase panelinden başlat.");
+        })
+
+        /* --- 2) Şema: tablolar --- */
+        .then(function () {
+          /* DİKKAT: burada head:true KULLANMA.
+             HEAD isteğinde gövde dönmediği için supabase-js hata
+             nesnesini dolduramıyor; olmayan tablo "başarılı" gibi
+             görünüyor ve tanı yanlış yeşil veriyor. Gerçek bir
+             select yapıp hem error hem status'e bakıyoruz. */
+          return Promise.all(TABLOLAR.map(function (t) {
+            return YKS.SB.from(t).select("*").limit(1)
+              .then(function (r) {
+                var yokMu = (r.error && r.error.code === "PGRST205") ||
+                            (!r.error && r.status === 404);
+
+                if (yokMu) {
+                  ekle("sema", "yok", "<code>" + t + "</code> tablosu yok",
+                       "schema.sql çalıştırılmamış.");
+                } else if (r.error) {
+                  ekle("sema", "uyari", "<code>" + t + "</code>",
+                       r.error.message.slice(0, 90));
+                } else {
+                  ekle("sema", "ok", "<code>" + t + "</code>",
+                       "erişilebilir (" + r.data.length + " satır döndü)");
+                }
+              });
+          }));
+        })
+
+        /* --- 3) İşlevler --- */
+        .then(function () {
+          return Promise.all(ISLEVLER.map(function (fn) {
+            var arg = fn === "is_admin" ? {} : { limit_n: 1 };
+            return YKS.SB.rpc(fn, arg).then(function (r) {
+              if (r.error && /Could not find the function/i.test(r.error.message)) {
+                ekle("sema", "yok", "<code>" + fn + "()</code> işlevi yok", "schema.sql eksik çalışmış.");
+              } else if (r.error) {
+                ekle("sema", "uyari", "<code>" + fn + "()</code>", r.error.message.slice(0, 90));
+              } else {
+                ekle("sema", "ok", "<code>" + fn + "()</code> çalışıyor");
+              }
+            });
+          }));
+        })
+
+        /* --- 4) Güvenlik: RLS gerçekten uyguluyor mu? --- */
+        .then(function () {
+          /* Oturum açmadan profil çekmeye çalış. Politikalar
+             "to authenticated" olduğu için sonuç BOŞ olmalı.
+             Satır dönüyorsa RLS kapalı demektir — kritik hata. */
+          return YKS.SB.auth.getSession().then(function (s) {
+            var girisVar = !!(s.data && s.data.session);
+
+            return YKS.SB.from("profiles").select("id").limit(5).then(function (r) {
+              if (r.error && r.error.code === "PGRST205") {
+                ekle("guvenlik", "bekle", "RLS sınanamadı", "Önce şemayı kur.");
+                return;
+              }
+              if (girisVar) {
+                ekle("guvenlik", "bekle", "RLS sınanamadı",
+                     "Bu tarayıcıda açık bir oturum var; anonim testi için çıkış yap.");
+                return;
+              }
+              if (r.error) {
+                ekle("guvenlik", "ok", "RLS anonim erişimi engelliyor", r.error.message.slice(0, 80));
+              } else if (r.data && r.data.length > 0) {
+                ekle("guvenlik", "yok",
+                     "<b>RLS KAPALI GÖRÜNÜYOR</b> — anonim istek " + r.data.length + " satır aldı",
+                     "schema.sql'in 10. bölümü çalışmamış olabilir. Bu hâliyle yayına ALMA.");
+              } else {
+                ekle("guvenlik", "ok", "RLS çalışıyor",
+                     "Anonim istek boş döndü — politikalar uygulanıyor.");
+              }
+            });
+          });
+        })
+
+        /* --- 5) Depolama --- */
+        .then(function () {
+          /* Kova kontrolü üç yoldan da yanıltıcı olabiliyor:
+               storage.list()   → olmayan kovada da boş dizi döner (yanlış yeşil)
+               storage.getBucket() → storage.buckets tablosunun kendi RLS'i
+                                     anon rolünü engellediği için VAR OLAN kovaya
+                                     bile "Bucket not found" der (yanlış kırmızı)
+             Güvenilir olan: herkese açık nesne uç noktasına olmayan bir dosya
+             sor. Kova varsa "NoSuchKey", yoksa "NoSuchBucket" döner. */
+          var yol = YKS.SupabaseConfig.url + "/storage/v1/object/public/" +
+                    YKS.SupabaseConfig.bucket + "/__tani__.jpg";
+
+          return fetch(yol).then(function (r) { return r.text(); })
+            .then(function (t) {
+              if (/NoSuchBucket|Bucket not found/i.test(t)) {
+                ekle("depolama", "yok", "<code>medya</code> kovası yok",
+                     "schema.sql'in 11. bölümü çalışmamış.");
+              } else if (/NoSuchKey|Object not found/i.test(t)) {
+                ekle("depolama", "ok", "<code>medya</code> kovası hazır",
+                     "Herkese açık okuma çalışıyor · görseller buraya yüklenecek");
+              } else {
+                ekle("depolama", "uyari", "<code>medya</code> kovası belirsiz",
+                     t.slice(0, 80));
+              }
+            })
+            .catch(function (e) {
+              ekle("depolama", "uyari", "Depolama sınanamadı", String(e.message));
+            });
+        })
+
+        .then(function () { ciz(rapor, hataSayisi, uyariSayisi); })
+        .catch(function (e) {
+          ekle("baglanti", "yok", "Beklenmeyen hata", String(e.message));
+          ciz(rapor, hataSayisi, uyariSayisi);
+        });
+    }
+
+    function ciz(rapor, hata, uyari) {
+      var html = "";
+      if (rapor.baglanti.length) html += grup("Bağlantı", rapor.baglanti.join(""));
+      if (rapor.sema.length)     html += grup("Şema", rapor.sema.join(""));
+      if (rapor.guvenlik.length) html += grup("Güvenlik", rapor.guvenlik.join(""));
+      if (rapor.depolama.length) html += grup("Depolama", rapor.depolama.join(""));
+      document.getElementById("sonuc").innerHTML = html;
+
+      var ozet;
+      if (hata === 0 && uyari === 0) {
+        ozet = '<div class="ozet iyi"><h3><i class="fa-solid fa-circle-check"></i> Her şey hazır</h3>' +
+          "<p>Şema kurulu, RLS çalışıyor, depolama açık. Kod geçişine başlanabilir.</p></div>";
+      } else if (hata > 0) {
+        ozet = '<div class="ozet kotu"><h3><i class="fa-solid fa-circle-xmark"></i> ' +
+          hata + " sorun bulundu</h3><p>Büyük ihtimalle <code>supabase/schema.sql</code> " +
+          "henüz çalıştırılmadı. Supabase panelinde <b>SQL Editor → New query</b> " +
+          "bölümüne dosyanın tamamını yapıştırıp <b>Run</b> de, sonra buradan " +
+          "<b>Tekrar dene</b>.</p></div>";
+      } else {
+        ozet = '<div class="ozet"><h3><i class="fa-solid fa-triangle-exclamation"></i> ' +
+          uyari + " uyarı</h3><p>Kritik hata yok ama aşağıdaki satırlara bak.</p></div>";
+      }
+      document.getElementById("ozet").innerHTML = ozet;
+    }
+
+    document.getElementById("tekrar").addEventListener("click", calistir);
+    calistir();
+  })();
+  </script>
+</body>
+</html>

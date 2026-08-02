@@ -1,0 +1,484 @@
+/* ============================================================
+   YKS Takip Sistemi — style.css
+   Global tasarım sistemi: renk token'ları, tipografi, cam efekti,
+   butonlar, form elemanları, bildirimler, parçacık katmanı.
+   Bu dosya HER sayfada yüklenir. Sayfaya özel stiller
+   login.css ve admin.css içindedir.
+   ============================================================ */
+
+/* ---------- 1) Tasarım Token'ları --------------------------- */
+:root {
+  /* Yüzeyler (Discord benzeri koyu tema) */
+  --bg-900: #08090f;
+  --bg-800: #0d0f18;
+  --bg-700: #141726;
+
+  /* Cam efekti katmanları */
+  --glass: rgba(255, 255, 255, 0.045);
+  --glass-strong: rgba(255, 255, 255, 0.075);
+  --stroke: rgba(255, 255, 255, 0.09);
+  --stroke-strong: rgba(255, 255, 255, 0.16);
+
+  /* Marka renkleri */
+  --brand: #5b6cff;
+  --brand-2: #a259ff;
+  --brand-soft: rgba(91, 108, 255, 0.16);
+
+  /* Durum renkleri */
+  --ok: #2fd4a7;
+  --warn: #ffc046;
+  --danger: #ff5c7a;
+
+  /* Metin */
+  --text: #e9ebf5;
+  --muted: #98a0bb;
+  --faint: #667090;
+
+  /* Ölçüler */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --blur: 18px;
+
+  /* Geçişler */
+  --t-fast: 0.16s ease;
+  --t-med: 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- 2) Temel Sıfırlama ------------------------------ */
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg-900);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Sayfa arka planındaki yumuşak ışık lekeleri */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -3;
+  background:
+    radial-gradient(900px 600px at 12% -10%, rgba(91, 108, 255, 0.20), transparent 60%),
+    radial-gradient(800px 600px at 92% 110%, rgba(162, 89, 255, 0.18), transparent 60%),
+    linear-gradient(160deg, var(--bg-900), var(--bg-800));
+}
+
+a { color: var(--brand); text-decoration: none; }
+a:hover { color: var(--brand-2); }
+
+h1, h2, h3, h4, h5 { font-weight: 600; letter-spacing: -0.02em; margin: 0; }
+
+/* Klavye ile gezinenler için görünür odak halkası */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ---------- 3) Parçacık Katmanı ----------------------------- */
+/* script.js içindeki YKS.Particles bu canvas'ı çizer */
+#particle-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+/* ---------- 4) Cam Efekti (Glassmorphism) ------------------- */
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  box-shadow: var(--shadow);
+}
+
+.glass-soft {
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  border-radius: var(--r-md);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ---------- 5) Tipografi Yardımcıları ----------------------- */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.muted { color: var(--muted); }
+.faint { color: var(--faint); font-size: 13px; }
+
+.gradient-text {
+  background: linear-gradient(100deg, var(--text) 10%, var(--brand) 55%, var(--brand-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- 6) Form Elemanları ------------------------------ */
+.field { margin-bottom: 16px; }
+
+.field label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 7px;
+  letter-spacing: 0.01em;
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 12px 14px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--stroke);
+  border-radius: var(--r-sm);
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color var(--t-fast), background var(--t-fast), box-shadow var(--t-fast);
+}
+
+.textarea { resize: vertical; min-height: 92px; }
+
+.input::placeholder,
+.textarea::placeholder { color: var(--faint); }
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px var(--brand-soft);
+}
+
+/* Tarayıcının koyu temada okunur açılır liste göstermesi için */
+.select { appearance: none; background-image: none; cursor: pointer; }
+.select option { background: var(--bg-700); color: var(--text); }
+
+/* İkonlu girdi sarmalayıcı */
+.input-icon { position: relative; }
+.input-icon > i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--faint);
+  font-size: 14px;
+  pointer-events: none;
+  transition: color var(--t-fast);
+}
+.input-icon .input,
+.input-icon .select { padding-left: 42px; }
+/* Girdi odaklandığında ikon marka rengine döner */
+.input-icon:focus-within > i { color: var(--brand); }
+
+/* Şifre göster/gizle butonu */
+.toggle-eye {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: 0;
+  color: var(--faint);
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.toggle-eye:hover { color: var(--text); }
+
+/* Alan altındaki küçük açıklama satırı */
+.hint { font-size: 11.5px; color: var(--faint); margin-top: 6px; }
+
+/* Doğrulamadan geçmeyen alan kırmızıya döner */
+.input.invalid,
+.select.invalid,
+.textarea.invalid {
+  border-color: rgba(255, 92, 122, 0.55);
+  background: rgba(255, 92, 122, 0.06);
+}
+.hint.hint-error { color: #ffb3c2; }
+.hint.hint-ok { color: var(--ok); }
+
+/* İki sütunlu form yerleşimi (dar ekranda tek sütuna iner) */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 16px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+}
+
+@media (max-width: 620px) {
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+/* ---------- 6b) Görsel Yükleme Alanları --------------------- */
+/* Hem yönetici hesap formu hem üyelik başvuru formu kullanır */
+.upload {
+  position: relative;
+  border: 1px dashed var(--stroke-strong);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.025);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+.upload:hover { border-color: var(--brand); background: rgba(91, 108, 255, 0.06); }
+
+.upload input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-avatar { height: 132px; display: grid; place-items: center; }
+.upload-banner { height: 132px; display: grid; place-items: center; }
+
+.upload-empty { text-align: center; color: var(--faint); font-size: 12.5px; pointer-events: none; }
+.upload-empty i { display: block; font-size: 20px; margin-bottom: 7px; color: var(--brand); }
+
+.upload-preview {
+  display: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.upload.filled .upload-preview { display: block; }
+.upload.filled .upload-empty { display: none; }
+
+.upload-clear {
+  position: absolute;
+  top: 8px; right: 8px;
+  z-index: 2;
+  width: 28px; height: 28px;
+  display: none;
+  place-items: center;
+  border-radius: 8px;
+  border: 1px solid var(--stroke-strong);
+  background: rgba(8, 9, 15, 0.8);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+}
+.upload.filled .upload-clear { display: grid; }
+
+/* ---------- 7) Butonlar ------------------------------------- */
+.btn-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 12px 20px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: transform var(--t-fast), filter var(--t-fast), background var(--t-fast);
+}
+
+.btn-x:active { transform: translateY(1px) scale(0.995); }
+
+.btn-primary-x {
+  background: linear-gradient(120deg, var(--brand), var(--brand-2));
+  box-shadow: 0 10px 26px rgba(91, 108, 255, 0.30);
+}
+.btn-primary-x:hover { filter: brightness(1.1); }
+
+.btn-ghost-x {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--stroke);
+}
+.btn-ghost-x:hover { background: rgba(255, 255, 255, 0.09); }
+
+.btn-danger-x {
+  background: rgba(255, 92, 122, 0.12);
+  border-color: rgba(255, 92, 122, 0.35);
+  color: #ffb3c2;
+}
+.btn-danger-x:hover { background: rgba(255, 92, 122, 0.2); }
+
+.btn-block { width: 100%; }
+
+.btn-x[disabled] { opacity: 0.55; cursor: not-allowed; }
+
+/* ---------- 8) Rozetler ------------------------------------- */
+.badge-x {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+}
+.badge-admin {
+  background: rgba(162, 89, 255, 0.14);
+  border-color: rgba(162, 89, 255, 0.35);
+  color: #d9bcff;
+}
+.badge-uye {
+  background: rgba(91, 108, 255, 0.13);
+  border-color: rgba(91, 108, 255, 0.32);
+  color: #bcc4ff;
+}
+
+/* Başvuru durumu rozetleri */
+.badge-pending {
+  background: rgba(255, 192, 70, 0.13);
+  border-color: rgba(255, 192, 70, 0.34);
+  color: #ffd98a;
+}
+.badge-approved {
+  background: rgba(47, 212, 167, 0.13);
+  border-color: rgba(47, 212, 167, 0.32);
+  color: #8ceed3;
+}
+.badge-rejected {
+  background: rgba(255, 92, 122, 0.12);
+  border-color: rgba(255, 92, 122, 0.32);
+  color: #ffb3c2;
+}
+
+/* ---------- 9) Bildirimler (Toast) -------------------------- */
+#toast-area {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: min(360px, calc(100vw - 36px));
+}
+
+.toast-x {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 13px 15px;
+  border-radius: var(--r-sm);
+  background: rgba(20, 23, 38, 0.9);
+  border: 1px solid var(--stroke-strong);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  font-size: 13.5px;
+  animation: toast-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.toast-x.leaving { animation: toast-out 0.22s ease forwards; }
+.toast-x i { margin-top: 2px; }
+.toast-ok i { color: var(--ok); }
+.toast-error i { color: var(--danger); }
+.toast-warn i { color: var(--warn); }
+.toast-info i { color: var(--brand); }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(24px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes toast-out {
+  to { opacity: 0; transform: translateX(24px); }
+}
+
+/* ---------- 10) Ortak Animasyonlar -------------------------- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(91, 108, 255, 0.35); }
+  70% { box-shadow: 0 0 0 14px rgba(91, 108, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(91, 108, 255, 0); }
+}
+
+.rise { animation: rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+/* Sıralı giriş gecikmeleri — animasyonlu açılış için */
+.d-1 { animation-delay: 0.06s; }
+.d-2 { animation-delay: 0.12s; }
+.d-3 { animation-delay: 0.18s; }
+.d-4 { animation-delay: 0.24s; }
+.d-5 { animation-delay: 0.30s; }
+
+/* ---------- 11) Kaydırma Çubuğu ----------------------------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.22); background-clip: content-box; }
+
+/* ---------- 12) Bootstrap Uyumu ----------------------------- */
+/* Bootstrap modal/tooltip gibi bileşenleri koyu temaya uydurur */
+.modal-content {
+  background: rgba(17, 19, 30, 0.96);
+  border: 1px solid var(--stroke-strong);
+  border-radius: var(--r-md);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.modal-header, .modal-footer { border-color: var(--stroke); }
+
+/* ---------- 13) Erişilebilirlik ----------------------------- */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Hareket azaltma tercihi olan kullanıcılar için */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  #particle-canvas { display: none; }
+}

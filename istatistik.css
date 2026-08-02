@@ -1,0 +1,807 @@
+/* ============================================================
+   Bay Porsuk — istatistik.css
+   Grafikler ve İstatistikler modülü stilleri.
+
+   Grafikler harici kütüphane olmadan, doğrudan SVG olarak
+   çizilir. Seri renkleri JavaScript'ten öznitelik olarak
+   gelir; buradaki sınıflar yalnızca ızgara, eksen, etiket
+   gibi yapısal parçaları biçimlendirir.
+   ============================================================ */
+
+/* ---------- 1) Sayfa iskeleti ------------------------------- */
+.stats-page {
+  min-height: 100dvh;
+  padding: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.stats-container {
+  width: 100%;
+  max-width: 1500px;
+}
+
+.stats-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 20px 24px;
+  border-radius: var(--r-lg);
+  margin-bottom: 24px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* netler.css yüklenmediği için burada tanımlı */
+.header-sub {
+  display: block;
+  font-size: 12.5px;
+  color: var(--faint);
+}
+
+.stats-header .header-side {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ---------- 2) Araç çubuğu ---------------------------------- */
+.stats-toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 16px;
+  border-radius: var(--r-lg);
+  margin-bottom: 24px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  flex-wrap: wrap;
+}
+
+.stats-toolbar .toolbar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 0 1 220px;
+  min-width: 180px;
+}
+
+.stats-toolbar .toolbar-group label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+}
+
+.toolbar-range {
+  margin-left: auto;
+  align-self: center;
+  font-size: 12.5px;
+  color: var(--muted);
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--stroke);
+}
+
+.toolbar-range strong { color: var(--text); font-weight: 600; }
+
+/* ---------- 3) Bölüm başlıkları ----------------------------- */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 34px 2px 16px;
+}
+
+.section-head:first-child { margin-top: 4px; }
+
+.section-head h2 {
+  font-size: 17px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-head h2 i { color: var(--brand); font-size: 16px; }
+
+.section-head p {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--faint);
+}
+
+/* ---------- 4) Anahtar gösterge kartları -------------------- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.kpi-card {
+  position: relative;
+  padding: 18px 20px;
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: transform var(--t-med), border-color var(--t-fast), box-shadow var(--t-med);
+}
+
+.kpi-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand);
+  box-shadow: 0 8px 24px rgba(91, 108, 255, 0.2);
+}
+
+/* Kartın sol kenarındaki renk şeridi — türü tek bakışta ayırır */
+.kpi-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--kpi-color, var(--brand));
+  opacity: 0.85;
+}
+
+.kpi-card .kpi-icon {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  font-size: 20px;
+  color: var(--kpi-color, var(--brand));
+  opacity: 0.32;
+}
+
+.kpi-card .kpi-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--faint);
+  margin-bottom: 8px;
+  padding-right: 30px;
+}
+
+.kpi-card .kpi-value {
+  font-size: 25px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text);
+}
+
+.kpi-card .kpi-value small {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 3px;
+}
+
+.kpi-card .kpi-note {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.kpi-card .kpi-note.up { color: #34d399; }
+.kpi-card .kpi-note.down { color: #f87171; }
+.kpi-card .kpi-note.flat { color: var(--faint); }
+
+/* Kartın altındaki ince eğilim çizgisi */
+.kpi-spark {
+  display: block;
+  width: 100%;
+  height: 34px;
+  margin-top: 10px;
+  overflow: visible;
+}
+
+.kpi-spark .spark-line {
+  fill: none;
+  stroke: var(--kpi-color, var(--brand));
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.kpi-spark .spark-area { stroke: none; opacity: 0.16; }
+
+/* ---------- 5) Grafik kartı --------------------------------- */
+.chart-card {
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 18px 22px;
+  background: linear-gradient(135deg, rgba(91, 108, 255, 0.1), rgba(162, 89, 255, 0.05));
+  border-bottom: 1px solid var(--stroke);
+}
+
+.chart-head h3 {
+  margin: 0;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-head h3 i { color: var(--brand); font-size: 15px; }
+
+.chart-head .chart-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.chart-head .chart-meta strong { color: var(--text); font-weight: 600; }
+
+.chart-body { padding: 18px 16px 12px; }
+.chart-body.tight { padding: 14px 16px; }
+
+.chart-foot {
+  padding: 0 22px 16px;
+  font-size: 12.5px;
+  color: var(--faint);
+  line-height: 1.5;
+}
+
+/* İki grafiği yan yana koyan satır */
+.chart-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.chart-row > .chart-card { margin-bottom: 0; }
+.chart-row + .chart-row { margin-top: 20px; }
+.chart-row { margin-bottom: 20px; }
+
+/* ---------- 6) SVG ortak parçaları -------------------------- */
+.chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.chart-svg .c-grid {
+  stroke: rgba(255, 255, 255, 0.07);
+  stroke-width: 1;
+}
+
+.chart-svg .c-grid.dashed { stroke-dasharray: 4 5; }
+
+.chart-svg .c-axis {
+  stroke: rgba(255, 255, 255, 0.14);
+  stroke-width: 1;
+}
+
+.chart-svg .c-zero {
+  stroke: rgba(255, 92, 122, 0.45);
+  stroke-width: 1;
+  stroke-dasharray: 5 5;
+}
+
+.chart-svg .c-label {
+  fill: var(--faint);
+  font-size: 11.5px;
+  font-family: inherit;
+}
+
+.chart-svg .c-label.strong { fill: var(--muted); }
+
+.chart-svg .c-value {
+  fill: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+/* Çizgi ve alan */
+.chart-svg .c-line {
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart-svg .c-line.dashed { stroke-dasharray: 6 5; stroke-width: 1.8; }
+.chart-svg .c-area { stroke: none; }
+
+.chart-svg .c-dot {
+  stroke-width: 2.2;
+  fill: var(--bg-800);
+  transition: r var(--t-fast);
+}
+
+.chart-svg .c-hit { fill: transparent; cursor: pointer; }
+.chart-svg .c-hit:hover + .c-dot,
+.chart-svg .c-hit:hover ~ .c-dot { r: 6.5; }
+
+/* İmlecin bulunduğu sütunu belirten dikey şerit */
+.chart-svg .c-band { fill: rgba(255, 255, 255, 0.035); opacity: 0; }
+.chart-svg .c-band:hover { opacity: 1; }
+
+/* Sütunlar */
+.chart-svg .c-bar {
+  transition: opacity var(--t-fast), filter var(--t-fast);
+  cursor: pointer;
+}
+
+.chart-svg .c-bar:hover { filter: brightness(1.22); }
+.chart-svg .c-track { fill: rgba(255, 255, 255, 0.05); }
+
+/* Halka dilimleri */
+.chart-svg .c-slice {
+  transition: opacity var(--t-fast);
+  cursor: pointer;
+  stroke: var(--bg-900);
+  stroke-width: 1.5;
+}
+
+.chart-svg .c-slice:hover { opacity: 0.82; }
+
+.chart-svg .c-donut-total {
+  fill: var(--text);
+  font-size: 22px;
+  font-weight: 600;
+  font-family: inherit;
+  text-anchor: middle;
+}
+
+.chart-svg .c-donut-sub {
+  fill: var(--faint);
+  font-size: 11px;
+  font-family: inherit;
+  text-anchor: middle;
+}
+
+/* Radar */
+.chart-svg .c-radar-web {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
+}
+
+.chart-svg .c-radar-spoke { stroke: rgba(255, 255, 255, 0.08); stroke-width: 1; }
+.chart-svg .c-radar-area { stroke-width: 2; }
+.chart-svg .c-radar-dot { stroke-width: 0; }
+
+/* Takvim ısı haritası */
+.chart-svg .c-heat {
+  rx: 2.5;
+  ry: 2.5;
+  cursor: pointer;
+  transition: stroke var(--t-fast);
+  stroke: transparent;
+  stroke-width: 1;
+}
+
+.chart-svg .c-heat:hover { stroke: var(--text); }
+
+/* ---------- 7) Gösterge açıklaması (legend) ----------------- */
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 4px 22px 18px;
+}
+
+.chart-legend .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.chart-legend .legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.chart-legend .legend-item strong {
+  color: var(--text);
+  font-weight: 600;
+  margin-left: 2px;
+}
+
+/* Isı haritası ölçeği */
+.heat-scale {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--faint);
+}
+
+.heat-scale .heat-box {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+/* ---------- 8) Sıralı liste (yatay sütun) ------------------- */
+.rank-list { padding: 6px 22px 18px; }
+
+.rank-row {
+  display: grid;
+  grid-template-columns: minmax(96px, 150px) 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.rank-row:last-child { border-bottom: none; }
+
+.rank-row .rank-name {
+  font-size: 13.5px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rank-row .rank-name i { color: var(--faint); font-size: 12px; width: 14px; text-align: center; }
+
+.rank-row .rank-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.rank-row .rank-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width var(--t-med);
+}
+
+.rank-row .rank-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  min-width: 74px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank-row .rank-value small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--faint);
+}
+
+/* ---------- 9) İçgörü kartları ------------------------------ */
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.insight-card {
+  display: flex;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: var(--r-md);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(10px);
+}
+
+.insight-card .insight-icon {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  background: rgba(91, 108, 255, 0.14);
+  color: var(--brand);
+}
+
+.insight-card.good .insight-icon { background: rgba(47, 212, 167, 0.14); color: var(--ok); }
+.insight-card.warn .insight-icon { background: rgba(255, 192, 70, 0.14); color: var(--warn); }
+.insight-card.bad  .insight-icon { background: rgba(255, 92, 122, 0.14); color: var(--danger); }
+
+.insight-card h4 {
+  font-size: 13.5px;
+  margin: 0 0 3px;
+  font-weight: 600;
+}
+
+.insight-card p {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* ---------- 10) Sağlık skoru göstergesi --------------------- */
+.score-card {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 24px;
+  align-items: center;
+  padding: 22px;
+}
+
+.score-gauge { width: 100%; height: auto; overflow: visible; }
+
+.score-gauge .gauge-track {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-linecap: round;
+}
+
+.score-gauge .gauge-fill {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.score-gauge .gauge-value {
+  fill: var(--text);
+  font-size: 30px;
+  font-weight: 600;
+  font-family: inherit;
+  text-anchor: middle;
+}
+
+.score-gauge .gauge-cap {
+  fill: var(--faint);
+  font-size: 11px;
+  font-family: inherit;
+  text-anchor: middle;
+}
+
+.score-breakdown { display: grid; gap: 12px; }
+
+.score-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 170px) 1fr 56px;
+  align-items: center;
+  gap: 14px;
+}
+
+.score-row .score-name { font-size: 13px; color: var(--muted); }
+
+.score-row .score-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.score-row .score-fill { height: 100%; border-radius: 999px; }
+
+.score-row .score-num {
+  font-size: 13px;
+  font-weight: 600;
+  text-align: right;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 11) Detay tablosu ------------------------------- */
+.stat-table-wrap { overflow-x: auto; }
+
+.stat-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-table th,
+.stat-table td {
+  padding: 13px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--stroke);
+  white-space: nowrap;
+}
+
+.stat-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  background: rgba(13, 15, 24, 0.92);
+  backdrop-filter: blur(6px);
+}
+
+.stat-table td { font-size: 13.5px; }
+.stat-table td.num { text-align: right; }
+.stat-table th.num { text-align: right; }
+.stat-table tbody tr:hover { background: rgba(91, 108, 255, 0.05); }
+.stat-table tbody tr:last-child td { border-bottom: none; }
+.stat-table tfoot td {
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.03);
+  border-top: 1px solid var(--stroke-strong);
+  border-bottom: none;
+}
+
+.stat-table .cell-name {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--text);
+}
+
+.stat-table .cell-name i { color: var(--faint); font-size: 12px; width: 14px; text-align: center; }
+
+.delta { font-weight: 600; }
+.delta.up { color: #34d399; }
+.delta.down { color: #f87171; }
+.delta.flat { color: var(--faint); }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.pill.ok     { background: rgba(47, 212, 167, 0.13); color: var(--ok); border-color: rgba(47, 212, 167, 0.28); }
+.pill.warn   { background: rgba(255, 192, 70, 0.13); color: var(--warn); border-color: rgba(255, 192, 70, 0.28); }
+.pill.bad    { background: rgba(255, 92, 122, 0.13); color: var(--danger); border-color: rgba(255, 92, 122, 0.28); }
+.pill.mute   { background: rgba(255, 255, 255, 0.05); color: var(--muted); border-color: var(--stroke); }
+.pill.brand  { background: rgba(91, 108, 255, 0.14); color: var(--brand); border-color: rgba(91, 108, 255, 0.3); }
+
+/* ---------- 12) Bilgi balonu -------------------------------- */
+.chart-tip {
+  position: fixed;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -100%) translateY(-10px);
+  transition: opacity 0.12s ease;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: rgba(10, 12, 20, 0.96);
+  border: 1px solid var(--stroke-strong);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text);
+  max-width: 260px;
+  white-space: pre-line;
+}
+
+.chart-tip.show { opacity: 1; }
+.chart-tip .tip-title { display: block; font-weight: 600; margin-bottom: 2px; }
+.chart-tip .tip-sub { display: block; color: var(--faint); font-size: 11.5px; }
+
+/* ---------- 13) Boş durumlar -------------------------------- */
+.empty-stats {
+  text-align: center;
+  padding: 70px 24px;
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px dashed var(--stroke-strong);
+  backdrop-filter: blur(12px);
+}
+
+.empty-stats i {
+  font-size: 44px;
+  color: var(--brand);
+  opacity: 0.45;
+  margin-bottom: 14px;
+}
+
+.empty-stats h3 { font-size: 19px; margin-bottom: 8px; }
+.empty-stats p { color: var(--muted); margin-bottom: 20px; }
+
+/* Grafik kartının içinde veri yoksa */
+.chart-empty {
+  padding: 44px 20px;
+  text-align: center;
+  color: var(--faint);
+  font-size: 13px;
+}
+
+.chart-empty i { display: block; font-size: 26px; margin-bottom: 10px; opacity: 0.4; }
+
+/* ---------- 14) Yazdırma ------------------------------------ */
+@media print {
+  #particle-canvas,
+  .stats-header .btn-x,
+  .stats-toolbar,
+  .exam-tabs,
+  #chart-tip,
+  #toast-area { display: none !important; }
+
+  body { background: #fff; color: #111; }
+  body::before { display: none; }
+
+  .stats-page { padding: 0; }
+  .chart-card,
+  .kpi-card,
+  .insight-card {
+    break-inside: avoid;
+    background: #fff;
+    border-color: #ddd;
+    box-shadow: none;
+  }
+}
+
+/* ---------- 15) Duyarlı düzen ------------------------------- */
+@media (max-width: 900px) {
+  .score-card { grid-template-columns: 1fr; }
+  .score-gauge { max-width: 190px; margin: 0 auto; }
+}
+
+@media (max-width: 768px) {
+  .stats-page { padding: 20px 14px; }
+
+  .stats-header { flex-direction: column; align-items: stretch; }
+  .stats-header .header-title { justify-content: center; text-align: center; }
+  .stats-header .header-side { justify-content: center; }
+  .stats-header .header-side .btn-x { flex: 1; }
+
+  .stats-toolbar { flex-direction: column; align-items: stretch; }
+  .stats-toolbar .toolbar-group { flex: 1 1 auto; }
+  .toolbar-range { margin-left: 0; text-align: center; }
+
+  .kpi-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  .kpi-card .kpi-value { font-size: 21px; }
+
+  .chart-row { grid-template-columns: 1fr; }
+  .chart-body { padding: 14px 8px 8px; }
+
+  .chart-svg .c-label { font-size: 13px; }
+  .chart-svg .c-value { font-size: 12px; }
+
+  .rank-list { padding: 6px 16px 16px; }
+  .rank-row { grid-template-columns: minmax(78px, 110px) 1fr auto; gap: 10px; }
+  .rank-row .rank-value { min-width: 62px; font-size: 12px; }
+
+  .score-row { grid-template-columns: minmax(96px, 1fr) 1.2fr 46px; gap: 10px; }
+
+  .stat-table th,
+  .stat-table td { padding: 11px 13px; font-size: 12.5px; }
+}

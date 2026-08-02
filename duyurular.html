@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Duyurular · Bay Porsuk</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <!-- Üst bar ve boş durum bileşenleri modül sayfalarında ortak -->
+  <link rel="stylesheet" href="exams.css" />
+  <link rel="stylesheet" href="duyurular.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="sb.js"></script>
+  <script src="script.js"></script>
+  <script>
+    /* Oturum kontrolü hazır kapısında yapılır: Supabase oturumu
+       asenkron geldiği için sayfa çizilir çizilmez bakılamaz.
+       Karar verilene kadar sayfa gizli tutulur ki yetkisiz kullanıcı
+       içeriği bir an bile görmesin. */
+    document.documentElement.style.visibility = "hidden";
+    window.YKS.hazir(function () {
+      if (!window.YKS.Auth.isLoggedIn()) {
+        window.location.replace("index.html");
+        return;
+      }
+      document.documentElement.style.visibility = "";
+    });
+  </script>
+</head>
+
+<body>
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <div class="duyuru-page">
+    <div class="duyuru-container">
+
+      <!-- ================================================
+           ÜST BAR
+           ================================================ -->
+      <div class="duyuru-header glass">
+        <button type="button" class="btn-x btn-ghost-x" id="back-btn">
+          <i class="fa-solid fa-arrow-left"></i> Geri Dön
+        </button>
+
+        <div class="header-title">
+          <i class="fa-solid fa-bullhorn"></i>
+          <h1>Duyurular</h1>
+        </div>
+
+        <!-- Yalnızca yöneticiye gösterilir -->
+        <button type="button" class="btn-x btn-primary-x" id="new-btn" style="display:none">
+          <i class="fa-solid fa-plus"></i> Yeni duyuru
+        </button>
+      </div>
+
+      <!-- ================================================
+           ARAMA VE FİLTRE
+           ================================================ -->
+      <div class="duyuru-toolbar glass">
+        <div class="input-icon toolbar-search">
+          <input class="input" type="search" id="duyuru-search"
+                 placeholder="Başlık veya içerikte ara" />
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+
+        <select class="select toolbar-level" id="duyuru-level-filter" aria-label="Tür süzgeci">
+          <option value="">Tüm türler</option>
+          <option value="info">Bilgi</option>
+          <option value="success">Müjde</option>
+          <option value="warn">Uyarı</option>
+          <option value="danger">Önemli</option>
+        </select>
+
+        <span class="toolbar-count" id="duyuru-count">—</span>
+      </div>
+
+      <!-- ================================================
+           LİSTE
+           ================================================ -->
+      <div class="duyuru-list" id="duyuru-list"></div>
+
+    </div>
+  </div>
+
+  <!-- ================================================
+       DUYURU YAZMA / DÜZENLEME
+       ================================================ -->
+  <div class="modal fade" id="duyuru-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="duyuru-modal-title">
+            <i class="fa-solid fa-plus-circle"></i> Yeni duyuru
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+
+        <div class="modal-body">
+          <form id="duyuru-form" novalidate>
+
+            <div class="field">
+              <label for="d-title">Başlık</label>
+              <div class="input-icon">
+                <input class="input" type="text" id="d-title" maxlength="120"
+                       placeholder="örn: Deneme sınavı takvimi açıklandı" required />
+                <i class="fa-solid fa-heading"></i>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="d-level">Tür</label>
+                <div class="input-icon">
+                  <select class="select" id="d-level">
+                    <option value="info">Bilgi</option>
+                    <option value="success">Müjde</option>
+                    <option value="warn">Uyarı</option>
+                    <option value="danger">Önemli</option>
+                  </select>
+                  <i class="fa-solid fa-tag"></i>
+                </div>
+                <p class="hint">Duyurunun rengini ve rozetini belirler.</p>
+              </div>
+
+              <div class="field">
+                <label>Sabitleme</label>
+                <label class="pin-toggle">
+                  <input type="checkbox" id="d-pinned" />
+                  <span><i class="fa-solid fa-thumbtack"></i> Listenin başında sabit kalsın</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="d-body">Duyuru metni</label>
+              <textarea class="textarea" id="d-body" rows="8" maxlength="4000"
+                        placeholder="Herkesin görmesini istediğin metni yaz..."></textarea>
+              <p class="hint"><span id="d-body-count">0</span> / 4000 karakter · satır sonları korunur</p>
+            </div>
+
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-x btn-ghost-x" data-bs-dismiss="modal">İptal</button>
+          <button type="button" class="btn-x btn-primary-x" id="d-save">
+            <i class="fa-solid fa-paper-plane"></i> Yayımla
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       SİLME ONAYI
+       ================================================ -->
+  <div class="modal fade" id="duyuru-delete-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title">
+            <i class="fa-solid fa-triangle-exclamation"></i> Duyuruyu sil
+          </h5>
+        </div>
+        <div class="modal-body">
+          <p class="muted mb-2">Bu duyuru herkesin listesinden kalkacak. Emin misin?</p>
+          <p class="delete-target mb-0" id="delete-duyuru-name">—</p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn-x btn-ghost-x" data-bs-dismiss="modal">Vazgeç</button>
+          <button type="button" class="btn-x btn-danger-x" id="d-delete-ok">
+            <i class="fa-solid fa-trash"></i> Sil
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-area"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="duyurular.js"></script>
+</body>
+</html>

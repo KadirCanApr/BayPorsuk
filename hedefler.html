@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hedefler · Bay Porsuk</title>
+
+  <!-- Poppins yazı tipi -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Font Awesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+  <!-- Proje stilleri -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="exams.css" />
+  <link rel="stylesheet" href="hedefler.css" />
+
+  <!-- Yetki kontrolü -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="sb.js"></script>
+  <script src="script.js"></script>
+  <script>
+    /* Oturum kontrolü hazır kapısında yapılır: Supabase oturumu
+       asenkron geldiği için sayfa çizilir çizilmez bakılamaz.
+       Karar verilene kadar sayfa gizli tutulur ki yetkisiz kullanıcı
+       içeriği bir an bile görmesin. */
+    document.documentElement.style.visibility = "hidden";
+    window.YKS.hazir(function () {
+      if (!window.YKS.Auth.isLoggedIn()) {
+        window.location.replace("index.html");
+        return;
+      }
+      document.documentElement.style.visibility = "";
+    });
+  </script>
+</head>
+
+<body>
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <div class="goals-page">
+    <div class="goals-container">
+
+      <!-- ================================================
+           ÜST BAR
+           ================================================ -->
+      <div class="goals-header glass">
+        <button type="button" class="btn-x btn-ghost-x" id="back-btn">
+          <i class="fa-solid fa-arrow-left"></i> Geri Dön
+        </button>
+
+        <div class="header-title">
+          <i class="fa-solid fa-bullseye"></i>
+          <div>
+            <h1>Hedefler</h1>
+            <span class="header-sub" id="header-sub">Planla, takip et, bitir.</span>
+          </div>
+        </div>
+
+        <div class="header-side">
+          <span class="streak-chip" id="streak-chip" title="Tüm hedeflerini tamamladığın kesintisiz gün sayısı">
+            <i class="fa-solid fa-fire"></i> <b>0</b> gün
+          </span>
+          <button type="button" class="btn-x btn-primary-x" id="add-goal-btn">
+            <i class="fa-solid fa-plus"></i> Yeni Hedef
+          </button>
+        </div>
+      </div>
+
+      <!-- ================================================
+           İSTATİSTİK KARTLARI (hedefler.js doldurur)
+           ================================================ -->
+      <div class="goal-stats" id="goal-stats"></div>
+
+      <!-- ================================================
+           FİLTRE SEKMELERİ
+           ================================================ -->
+      <div class="goal-tabs glass" id="goal-tabs">
+        <button type="button" class="goal-tab active" data-filter="all">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>Tümü</span>
+          <span class="tab-count" data-count="all">0</span>
+        </button>
+        <button type="button" class="goal-tab" data-filter="today">
+          <i class="fa-solid fa-calendar-day"></i>
+          <span>Bugün</span>
+          <span class="tab-count" data-count="today">0</span>
+        </button>
+        <button type="button" class="goal-tab" data-filter="week">
+          <i class="fa-solid fa-calendar-week"></i>
+          <span>Bu Hafta</span>
+          <span class="tab-count" data-count="week">0</span>
+        </button>
+        <button type="button" class="goal-tab danger" data-filter="overdue">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>Geciken</span>
+          <span class="tab-count" data-count="overdue">0</span>
+        </button>
+        <button type="button" class="goal-tab" data-filter="done">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>Tamamlanan</span>
+          <span class="tab-count" data-count="done">0</span>
+        </button>
+      </div>
+
+      <!-- ================================================
+           ARAÇ ÇUBUĞU
+           ================================================ -->
+      <div class="goals-toolbar glass">
+        <div class="input-icon toolbar-search">
+          <input class="input" type="search" id="goal-search"
+                 placeholder="Hedef, ders veya not içinde ara" />
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+
+        <select class="select toolbar-select" id="goal-priority-filter" aria-label="Öncelik süzgeci">
+          <option value="all">Tüm öncelikler</option>
+          <option value="high">Yalnızca yüksek</option>
+          <option value="medium">Yalnızca orta</option>
+          <option value="low">Yalnızca düşük</option>
+        </select>
+
+        <select class="select toolbar-select" id="goal-sort" aria-label="Sıralama">
+          <option value="smart">Sıralama: akıllı</option>
+          <option value="date-asc">Tarih: yakından uzağa</option>
+          <option value="date-desc">Tarih: uzaktan yakına</option>
+          <option value="priority">Öncelik: yüksekten düşüğe</option>
+          <option value="progress">İlerleme: azdan çoğa</option>
+          <option value="title">Başlığa göre (A→Z)</option>
+        </select>
+
+        <span class="toolbar-count" id="goal-result-label">—</span>
+
+        <div class="view-switch" role="group" aria-label="Görünüm">
+          <button type="button" class="view-btn active" data-view="calendar" title="Takvim görünümü">
+            <i class="fa-solid fa-calendar-days"></i> Takvim
+          </button>
+          <button type="button" class="view-btn" data-view="list" title="Liste görünümü">
+            <i class="fa-solid fa-list-ul"></i> Liste
+          </button>
+        </div>
+      </div>
+
+      <!-- ================================================
+           GÖRÜNÜM 1 — TAKVİM + GÜN PANELİ
+           ================================================ -->
+      <div class="goals-main glass" id="view-calendar">
+        <div class="calendar-section">
+          <div class="calendar-header">
+            <button type="button" class="btn-x btn-ghost-x icon-btn" id="prev-month" title="Önceki ay">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <h3 id="calendar-title">—</h3>
+            <button type="button" class="btn-x btn-ghost-x icon-btn" id="next-month" title="Sonraki ay">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button type="button" class="btn-x btn-ghost-x" id="today-btn">
+              <i class="fa-solid fa-calendar-day"></i> Bugün
+            </button>
+          </div>
+
+          <!-- Ay özeti şeridi -->
+          <div class="month-summary" id="month-summary"></div>
+
+          <div class="calendar-grid" id="calendar-grid"></div>
+
+          <div class="calendar-legend">
+            <span><i class="dot high"></i> Yüksek</span>
+            <span><i class="dot medium"></i> Orta</span>
+            <span><i class="dot low"></i> Düşük</span>
+            <span><i class="dot done"></i> Günü bitirdin</span>
+            <span class="legend-hint"><i class="fa-solid fa-keyboard"></i> N: yeni · T: bugün · ← →: ay</span>
+          </div>
+        </div>
+
+        <div class="goals-sidebar">
+          <div class="day-panel-head">
+            <div class="day-ring" id="day-ring"></div>
+            <div class="day-head-text">
+              <h4 id="selected-date-title">Gün seç</h4>
+              <span class="day-head-sub" id="selected-date-sub">Takvimden bir gün seç.</span>
+            </div>
+          </div>
+
+          <div class="day-panel-actions" id="day-panel-actions"></div>
+
+          <div class="goals-list" id="goals-list"></div>
+        </div>
+      </div>
+
+      <!-- ================================================
+           GÖRÜNÜM 2 — LİSTE
+           ================================================ -->
+      <div class="goals-listview is-hidden" id="view-list"></div>
+
+    </div>
+  </div>
+
+  <!-- ================================================
+       HEDEF EKLEME / DÜZENLEME
+       ================================================ -->
+  <div class="modal fade" id="goal-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="goal-modal-title">
+            <i class="fa-solid fa-bullseye"></i> Yeni Hedef
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+
+        <div class="modal-body">
+          <form id="goal-form" novalidate>
+
+            <!-- Başlık -->
+            <div class="field">
+              <label for="goal-title">Hedef Başlığı</label>
+              <div class="input-icon">
+                <input class="input" type="text" id="goal-title" maxlength="120"
+                       placeholder="örn: TYT Matematik 40 soru çöz" required />
+                <i class="fa-solid fa-flag-checkered"></i>
+              </div>
+            </div>
+
+            <!-- Tarih + Öncelik -->
+            <div class="grid-2">
+              <div class="field">
+                <label for="goal-date">Tarih</label>
+                <div class="input-icon">
+                  <input class="input" type="date" id="goal-date" required />
+                  <i class="fa-solid fa-calendar"></i>
+                </div>
+                <p class="hint mb-0" id="goal-date-hint">—</p>
+              </div>
+
+              <div class="field">
+                <label>Öncelik</label>
+                <div class="segmented" id="priority-picker">
+                  <button type="button" class="seg-btn low" data-priority="low">
+                    <i class="fa-solid fa-flag"></i> Düşük
+                  </button>
+                  <button type="button" class="seg-btn medium active" data-priority="medium">
+                    <i class="fa-solid fa-flag"></i> Orta
+                  </button>
+                  <button type="button" class="seg-btn high" data-priority="high">
+                    <i class="fa-solid fa-flag"></i> Yüksek
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ders bağlantısı -->
+            <div class="form-block">
+              <div class="form-block-head">
+                <i class="fa-solid fa-book-open"></i> Ders Bağlantısı
+                <span class="faint">isteğe bağlı</span>
+              </div>
+              <div class="grid-2">
+                <div class="field">
+                  <label for="goal-exam-type">Sınav</label>
+                  <div class="input-icon">
+                    <select class="select" id="goal-exam-type">
+                      <option value="">Bağlantı yok</option>
+                      <option value="tyt">TYT</option>
+                      <option value="ayt">AYT</option>
+                      <option value="kpss">KPSS</option>
+                    </select>
+                    <i class="fa-solid fa-list"></i>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="goal-subject">Ders</label>
+                  <div class="input-icon">
+                    <select class="select" id="goal-subject" disabled>
+                      <option value="">Önce sınav seç</option>
+                    </select>
+                    <i class="fa-solid fa-graduation-cap"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ölçüt -->
+            <div class="form-block">
+              <div class="form-block-head">
+                <i class="fa-solid fa-gauge-high"></i> Ölçüt
+                <span class="faint">hedefi sayıyla takip et</span>
+              </div>
+
+              <div class="segmented segmented-wide" id="metric-picker">
+                <button type="button" class="seg-btn active" data-metric="none">
+                  <i class="fa-solid fa-check"></i> Yok
+                </button>
+                <button type="button" class="seg-btn" data-metric="soru">
+                  <i class="fa-solid fa-list-check"></i> Soru
+                </button>
+                <button type="button" class="seg-btn" data-metric="sayfa">
+                  <i class="fa-solid fa-book"></i> Sayfa
+                </button>
+                <button type="button" class="seg-btn" data-metric="dakika">
+                  <i class="fa-solid fa-clock"></i> Süre
+                </button>
+              </div>
+
+              <div class="metric-config is-hidden" id="metric-config">
+                <div class="field mb-0">
+                  <label for="goal-metric-target">Hedef miktar (<span id="metric-unit-label">adet</span>)</label>
+                  <div class="input-icon">
+                    <input class="input" type="number" id="goal-metric-target" min="1" max="10000" step="1" value="20" />
+                    <i class="fa-solid fa-bullseye"></i>
+                  </div>
+                </div>
+
+                <label class="checkbox-line is-hidden" id="metric-auto-line">
+                  <input type="checkbox" id="goal-metric-auto" />
+                  <span>Çalışma sayacından otomatik say
+                    <em class="faint">— o güne ait süre kayıtları toplanır</em>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Tekrar -->
+            <div class="form-block">
+              <div class="form-block-head">
+                <i class="fa-solid fa-repeat"></i> Tekrar
+                <span class="faint">alışkanlığa çevir</span>
+              </div>
+
+              <div class="grid-2">
+                <div class="field mb-0">
+                  <label for="goal-repeat">Tekrar aralığı</label>
+                  <div class="input-icon">
+                    <select class="select" id="goal-repeat">
+                      <option value="none">Tek seferlik</option>
+                      <option value="daily">Her gün</option>
+                      <option value="weekday">Hafta içi (Pzt–Cum)</option>
+                      <option value="weekly">Haftalık (aynı gün)</option>
+                    </select>
+                    <i class="fa-solid fa-rotate"></i>
+                  </div>
+                </div>
+
+                <div class="field mb-0 is-hidden" id="repeat-until-field">
+                  <label for="goal-repeat-until">Bitiş tarihi</label>
+                  <div class="input-icon">
+                    <input class="input" type="date" id="goal-repeat-until" />
+                    <i class="fa-solid fa-flag-checkered"></i>
+                  </div>
+                  <p class="hint mb-0">Boş bırakırsan süresiz tekrar eder.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Alt adımlar -->
+            <div class="form-block">
+              <div class="form-block-head">
+                <i class="fa-solid fa-list-check"></i> Alt Adımlar
+                <span class="faint">büyük hedefi parçala</span>
+              </div>
+
+              <div class="steps-editor" id="steps-editor"></div>
+
+              <div class="step-add">
+                <div class="input-icon">
+                  <input class="input" type="text" id="step-input" maxlength="90"
+                         placeholder="Adım ekle ve Enter'a bas" />
+                  <i class="fa-solid fa-plus"></i>
+                </div>
+                <button type="button" class="btn-x btn-ghost-x" id="step-add-btn">Ekle</button>
+              </div>
+            </div>
+
+            <!-- Açıklama -->
+            <div class="field mb-0">
+              <label for="goal-description">Not (isteğe bağlı)</label>
+              <textarea class="textarea" id="goal-description" rows="3" maxlength="500"
+                        placeholder="Hedefle ilgili notların..."></textarea>
+            </div>
+
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-x btn-ghost-x" data-bs-dismiss="modal">İptal</button>
+          <button type="button" class="btn-x btn-primary-x" id="save-goal-btn">
+            <i class="fa-solid fa-floppy-disk"></i> Kaydet
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       SİLME ONAYI
+       ================================================ -->
+  <div class="modal fade" id="delete-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title">
+            <i class="fa-solid fa-triangle-exclamation"></i> Hedefi Sil
+          </h5>
+        </div>
+        <div class="modal-body">
+          <p class="muted mb-2" id="delete-goal-text">Bu hedef kalıcı olarak silinecek. Emin misin?</p>
+          <p class="delete-target mb-0" id="delete-goal-name">—</p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn-x btn-ghost-x" data-bs-dismiss="modal">Vazgeç</button>
+          <button type="button" class="btn-x btn-danger-x" id="confirm-delete-btn">
+            <i class="fa-solid fa-trash"></i> Sil
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bildirim alanı -->
+  <div id="toast-area"></div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Hedefler JS -->
+  <script src="hedefler.js"></script>
+</body>
+</html>

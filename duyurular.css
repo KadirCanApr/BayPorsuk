@@ -1,0 +1,303 @@
+/* ============================================================
+   Aksiyom — duyurular.css
+   Duyurular modülü stilleri
+   ============================================================ */
+
+/* ---------- 1) Sayfa Düzeni --------------------------------- */
+.duyuru-page {
+  min-height: 100dvh;
+  padding: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.duyuru-container {
+  width: 100%;
+  max-width: 900px;
+}
+
+/* ---------- 2) Üst Bar -------------------------------------- */
+.duyuru-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-radius: var(--r-lg);
+  margin-bottom: 24px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ---------- 3) Araç Çubuğu ---------------------------------- */
+.duyuru-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--r-lg);
+  margin-bottom: 20px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  flex-wrap: wrap;
+}
+
+.duyuru-toolbar .toolbar-search {
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
+.duyuru-toolbar .toolbar-level {
+  flex: 0 1 180px;
+}
+
+.duyuru-toolbar .toolbar-count {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+/* ---------- 4) Duyuru Kartı --------------------------------- */
+.duyuru-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.duyuru-card {
+  position: relative;
+  padding: 22px 24px;
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.25s;
+  /* Sol kenardaki tür şeridi */
+  border-left: 4px solid var(--brand);
+}
+
+.duyuru-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.duyuru-card.level-info    { border-left-color: var(--brand); }
+.duyuru-card.level-success { border-left-color: var(--ok); }
+.duyuru-card.level-warn    { border-left-color: var(--warn); }
+.duyuru-card.level-danger  { border-left-color: var(--danger); }
+
+.duyuru-card.pinned {
+  background: linear-gradient(135deg, rgba(91, 108, 255, 0.08), rgba(162, 89, 255, 0.04)),
+              var(--glass);
+}
+
+/* Son ziyaretten sonra yayımlananlar belirgin dursun */
+.duyuru-card.is-new {
+  border-color: rgba(91, 108, 255, 0.4);
+  box-shadow: 0 0 0 1px rgba(91, 108, 255, 0.18),
+              0 6px 22px rgba(91, 108, 255, 0.14);
+}
+
+.duyuru-card h3 {
+  font-size: 19px;
+  margin: 0 0 10px;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.duyuru-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.duyuru-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Tür rozeti */
+.duyuru-level {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.duyuru-level.info {
+  background: rgba(91, 108, 255, 0.15);
+  color: #a5b4ff;
+  border: 1px solid rgba(91, 108, 255, 0.3);
+}
+
+.duyuru-level.success {
+  background: rgba(47, 212, 167, 0.15);
+  color: #6ee7c4;
+  border: 1px solid rgba(47, 212, 167, 0.32);
+}
+
+.duyuru-level.warn {
+  background: rgba(255, 192, 70, 0.15);
+  color: #ffd28a;
+  border: 1px solid rgba(255, 192, 70, 0.32);
+}
+
+.duyuru-level.danger {
+  background: rgba(255, 92, 122, 0.15);
+  color: #ff9db1;
+  border: 1px solid rgba(255, 92, 122, 0.32);
+}
+
+/* Sabit / Yeni işaretleri */
+.duyuru-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.duyuru-flag.pin {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--stroke-strong);
+  color: var(--muted);
+}
+
+.duyuru-flag.new {
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Yönetici işlem düğmeleri */
+.duyuru-actions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.icon-action {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.icon-action:hover {
+  border-color: var(--brand);
+  background: rgba(91, 108, 255, 0.12);
+  color: var(--text);
+}
+
+.icon-action.danger:hover {
+  border-color: rgba(255, 92, 122, 0.5);
+  background: rgba(255, 92, 122, 0.14);
+  color: var(--danger);
+}
+
+/* Sabitlenmiş duyuruda raptiye dolu görünsün */
+.duyuru-card.pinned .icon-action [class*="thumbtack"] { color: var(--brand); }
+
+/* Metin */
+.duyuru-body {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--muted);
+  word-break: break-word;
+}
+
+.duyuru-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--stroke);
+  font-size: 12.5px;
+  color: var(--faint);
+}
+
+.duyuru-foot i {
+  color: var(--brand);
+  margin-right: 6px;
+}
+
+/* ---------- 5) Yazma Penceresi ------------------------------ */
+.pin-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 13.5px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.pin-toggle:hover {
+  border-color: var(--brand);
+  color: var(--text);
+}
+
+.pin-toggle input { accent-color: var(--brand); }
+
+.pin-toggle i { color: var(--brand); margin-right: 4px; }
+
+/* ---------- 6) Responsive ----------------------------------- */
+@media (max-width: 768px) {
+  .duyuru-page { padding: 20px 16px; }
+
+  .duyuru-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .duyuru-header .header-title { justify-content: center; }
+
+  .duyuru-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .duyuru-toolbar .toolbar-level { width: 100%; }
+
+  .duyuru-toolbar .toolbar-count {
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .duyuru-card { padding: 18px 16px; }
+
+  .duyuru-card-head { flex-direction: column; }
+
+  .duyuru-actions { margin-left: 0; }
+
+  .duyuru-foot { gap: 8px; flex-direction: column; }
+}

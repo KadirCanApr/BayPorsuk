@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Çalışma Sayacı · Bay Porsuk</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <!-- Sekme çubuğu ve üst bar bileşenleri modül sayfalarında ortak -->
+  <link rel="stylesheet" href="exams.css" />
+  <link rel="stylesheet" href="sayac.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="sb.js"></script>
+  <script src="script.js"></script>
+  <script>
+    /* Oturum kontrolü hazır kapısında yapılır: Supabase oturumu
+       asenkron geldiği için sayfa çizilir çizilmez bakılamaz.
+       Karar verilene kadar sayfa gizli tutulur ki yetkisiz kullanıcı
+       içeriği bir an bile görmesin. */
+    document.documentElement.style.visibility = "hidden";
+    window.YKS.hazir(function () {
+      if (!window.YKS.Auth.isLoggedIn()) {
+        window.location.replace("index.html");
+        return;
+      }
+      document.documentElement.style.visibility = "";
+    });
+  </script>
+</head>
+
+<body>
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <div class="timer-page">
+    <div class="timer-container">
+
+      <!-- ================================================
+           ÜST BAR
+           ================================================ -->
+      <div class="timer-header glass">
+        <button type="button" class="btn-x btn-ghost-x" id="back-btn">
+          <i class="fa-solid fa-arrow-left"></i> Geri Dön
+        </button>
+
+        <div class="header-title">
+          <i class="fa-solid fa-stopwatch"></i>
+          <h1>Çalışma Sayacı</h1>
+        </div>
+
+        <div class="header-side">
+          <div class="today-chip" id="today-chip" title="Kaydedilen çalışma süreleri">
+            <i class="fa-solid fa-calendar-day"></i>
+            <span id="today-total">0 dk</span>
+          </div>
+          <button type="button" class="btn-x btn-ghost-x icon-btn" id="sound-toggle"
+                  title="Alarm sesini aç / kapat" aria-label="Alarm sesini aç veya kapat">
+            <i class="fa-solid fa-volume-high"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ================================================
+           MOD SEÇİMİ
+           ================================================ -->
+      <div class="exam-tabs glass" role="tablist">
+        <button type="button" class="exam-tab active" data-mode="stopwatch" role="tab" aria-selected="true">
+          <i class="fa-solid fa-stopwatch"></i>
+          <span>Kronometre</span>
+        </button>
+        <button type="button" class="exam-tab" data-mode="countdown" role="tab" aria-selected="false">
+          <i class="fa-solid fa-hourglass-half"></i>
+          <span>Zaman Tutma</span>
+        </button>
+        <button type="button" class="exam-tab" data-mode="train" role="tab" aria-selected="false">
+          <i class="fa-solid fa-train"></i>
+          <span>Tren Gidene Kadar Çalış</span>
+        </button>
+        <button type="button" class="exam-tab" data-mode="report" role="tab" aria-selected="false">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Kaç Saat Çalıştım?</span>
+        </button>
+      </div>
+
+      <!-- ================================================
+           MOD 1 — KRONOMETRE
+           ================================================ -->
+      <section class="mode-panel active" id="mode-stopwatch">
+        <div class="timer-card glass">
+          <p class="mode-hint">
+            <i class="fa-solid fa-circle-info"></i>
+            Yukarı doğru sayar. İstediğin an tur kaydı alabilirsin;
+            sıfırlarken 1 dakikadan uzun oturumlar kaydedilir.
+          </p>
+
+          <div class="timer-display" id="sw-display"><span id="sw-main">00:00:00</span><span class="centi" id="sw-centi">.00</span></div>
+
+          <div class="timer-actions">
+            <button type="button" class="btn-x btn-primary-x" id="sw-toggle">
+              <i class="fa-solid fa-play"></i> Başlat
+            </button>
+            <button type="button" class="btn-x btn-ghost-x" id="sw-lap" disabled>
+              <i class="fa-solid fa-flag"></i> Tur
+            </button>
+            <button type="button" class="btn-x btn-ghost-x" id="sw-reset" disabled>
+              <i class="fa-solid fa-rotate-left"></i> Sıfırla
+            </button>
+          </div>
+
+          <div class="lap-list" id="sw-laps"></div>
+        </div>
+      </section>
+
+      <!-- ================================================
+           MOD 2 — ZAMAN TUTMA
+           ================================================ -->
+      <section class="mode-panel" id="mode-countdown">
+        <div class="timer-card glass">
+          <p class="mode-hint">
+            <i class="fa-solid fa-circle-info"></i>
+            Süreyi seç, geri saysın. Süre dolduğunda alarm çalar —
+            sesi kesene ya da bir dakika geçene kadar sürer.
+          </p>
+
+          <div class="preset-row" id="cd-presets"></div>
+
+          <div class="custom-row">
+            <div class="custom-field">
+              <label for="cd-hours">Saat</label>
+              <input class="input" type="number" id="cd-hours" min="0" max="12" value="0" />
+            </div>
+            <div class="custom-field">
+              <label for="cd-minutes">Dakika</label>
+              <input class="input" type="number" id="cd-minutes" min="0" max="59" value="25" />
+            </div>
+            <button type="button" class="btn-x btn-ghost-x" id="cd-set">
+              <i class="fa-solid fa-check"></i> Ayarla
+            </button>
+          </div>
+
+          <div class="ring-wrap">
+            <svg class="progress-ring" viewBox="0 0 280 280" aria-hidden="true">
+              <circle class="ring-track" cx="140" cy="140" r="120" />
+              <circle class="ring-value" cx="140" cy="140" r="120" id="cd-ring" />
+            </svg>
+            <div class="ring-center">
+              <div class="timer-display small" id="cd-display">25:00</div>
+              <div class="ring-label" id="cd-label">Hazır</div>
+            </div>
+          </div>
+
+          <div class="timer-actions">
+            <button type="button" class="btn-x btn-primary-x" id="cd-toggle">
+              <i class="fa-solid fa-play"></i> Başlat
+            </button>
+            <button type="button" class="btn-x btn-ghost-x" id="cd-reset" disabled>
+              <i class="fa-solid fa-rotate-left"></i> Sıfırla
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================
+           MOD 3 — TREN GİDENE KADAR ÇALIŞ
+           ================================================ -->
+      <section class="mode-panel" id="mode-train">
+        <div class="timer-card glass">
+          <p class="mode-hint">
+            <i class="fa-solid fa-circle-info"></i>
+            Süreyi seç; tren İstanbul'dan kalkıp o sürede gidebileceği
+            mesafeyi kat etsin. Sen çalıştıkça tren yol alır, süre
+            bittiğinde varış düdüğü çalar.
+          </p>
+
+          <div class="preset-row" id="tr-presets"></div>
+
+          <div class="custom-row">
+            <div class="custom-field">
+              <label for="tr-hours">Saat</label>
+              <input class="input" type="number" id="tr-hours" min="0" max="24" value="1" />
+            </div>
+            <div class="custom-field">
+              <label for="tr-minutes">Dakika</label>
+              <input class="input" type="number" id="tr-minutes" min="0" max="59" value="0" />
+            </div>
+            <button type="button" class="btn-x btn-ghost-x" id="tr-set">
+              <i class="fa-solid fa-check"></i> Ayarla
+            </button>
+          </div>
+
+          <div class="journey-bar" id="tr-journey"></div>
+
+          <div class="train-map" id="tr-map"></div>
+
+          <div class="timer-actions">
+            <button type="button" class="btn-x btn-primary-x" id="tr-toggle">
+              <i class="fa-solid fa-play"></i> Yolculuğu başlat
+            </button>
+            <button type="button" class="btn-x btn-ghost-x" id="tr-reset" disabled>
+              <i class="fa-solid fa-rotate-left"></i> Sıfırla
+            </button>
+          </div>
+
+          <p class="map-note">
+            Harita ve rota sadeleştirilmiş bir çizimdir; istasyon süreleri
+            gerçek tren yolculuklarına yakın tutulmuş yaklaşık değerlerdir.
+          </p>
+        </div>
+      </section>
+
+      <!-- ================================================
+           MOD 4 — KAÇ SAAT ÇALIŞTIM?
+           ================================================ -->
+      <section class="mode-panel" id="mode-report">
+        <div class="timer-card glass">
+          <p class="mode-hint">
+            <i class="fa-solid fa-circle-info"></i>
+            Sayaç bittikten sonra seçtiğin ders bilgileri burada toplanır.
+            Hangi derse ne kadar zaman ayırdığını gün gün görebilirsin.
+          </p>
+
+          <div class="report-toolbar">
+            <div class="toolbar-group">
+              <label for="rp-range">Dönem</label>
+              <select class="select" id="rp-range">
+                <option value="1">Bugün</option>
+                <option value="7" selected>Son 7 gün</option>
+                <option value="30">Son 30 gün</option>
+                <option value="0">Tümü</option>
+              </select>
+            </div>
+            <div class="toolbar-group">
+              <label for="rp-type">Sınav türü</label>
+              <select class="select" id="rp-type">
+                <option value="">Tümü</option>
+                <option value="tyt">TYT</option>
+                <option value="ayt">AYT</option>
+                <option value="kpss">KPSS</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="report-content"></div>
+        </div>
+      </section>
+
+      <!-- ================================================
+           KAYITLI OTURUMLAR
+           ================================================ -->
+      <div class="timer-card glass sessions-card">
+        <div class="sessions-head">
+          <div class="card-title">
+            <i class="fa-solid fa-clock-rotate-left"></i> Son çalışma kayıtların
+          </div>
+          <button type="button" class="btn-x btn-danger-x" id="clear-sessions">
+            <i class="fa-solid fa-trash"></i> Tümünü sil
+          </button>
+        </div>
+        <div id="session-list"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================================================
+       DERS SORMA PENCERESİ
+       ================================================ -->
+  <div class="modal fade" id="subject-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="fa-solid fa-book-open"></i> Hangi dersi çalıştın?
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+
+        <div class="modal-body">
+          <p class="muted ask-summary" id="ask-summary">—</p>
+
+          <div class="ask-step" id="ask-step-type">
+            <div class="ask-label">Önce sınav türünü seç</div>
+            <div class="type-grid" id="ask-types"></div>
+          </div>
+
+          <div class="ask-step" id="ask-step-subject" hidden>
+            <div class="ask-label">
+              <button type="button" class="link-btn" id="ask-back">
+                <i class="fa-solid fa-arrow-left"></i> Sınav türü
+              </button>
+              <span id="ask-type-label"></span>
+            </div>
+            <div class="subject-grid" id="ask-subjects"></div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-x btn-ghost-x" id="ask-skip">
+            <i class="fa-solid fa-forward"></i> Ders belirtmeden kaydet
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       ONAY PENCERESİ
+       ================================================ -->
+  <div class="modal fade" id="confirm-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title" id="confirm-title">Emin misin?</h5>
+        </div>
+        <div class="modal-body">
+          <p class="muted mb-0" id="confirm-text">Bu işlem geri alınamaz.</p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn-x btn-ghost-x" data-bs-dismiss="modal">Vazgeç</button>
+          <button type="button" class="btn-x btn-danger-x" id="confirm-ok">
+            <i class="fa-solid fa-trash"></i> Sil
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alarm şeridi -->
+  <div class="alarm-banner" id="alarm-banner" role="alert" aria-live="assertive">
+    <div class="alarm-icon"><i class="fa-solid fa-bell"></i></div>
+    <div class="alarm-text">
+      <strong id="alarm-title">Süre doldu!</strong>
+      <span id="alarm-desc">Mola verebilirsin.</span>
+    </div>
+    <button type="button" class="btn-x btn-primary-x" id="alarm-stop">
+      <i class="fa-solid fa-bell-slash"></i> Sesi kes
+    </button>
+  </div>
+
+  <div id="toast-area"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="sayac.js"></script>
+</body>
+</html>

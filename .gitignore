@@ -1,0 +1,10 @@
+# Editör ayarları
+.vscode/
+
+# Geçiş sırasında alınan yedekler — yayına gitmesin
+*.bak
+*.localstorage.bak
+
+# İşletim sistemi çöpleri
+Thumbs.db
+.DS_Store

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kayıt Ol · Bay Porsuk</title>
+  <meta name="description" content="Bay Porsuk - YKS & KPSS Sınav Destek Asistanı üye kayıt ekranı." />
+
+  <!-- Poppins yazı tipi -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Bootstrap 5 (yerleşim yardımcıları için) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Font Awesome 6 ikonları -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+  <!-- Proje stilleri -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="login.css" />
+</head>
+
+<body>
+  <!-- Arka plan parçacık katmanı -->
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <main class="auth-page">
+    <section id="panel-register" class="panel active">
+      <div class="auth-card glass rise" id="register-card">
+
+        <header class="brand">
+          <div class="brand-mark rise d-1">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <h1 class="gradient-text rise d-2">Üye Ol</h1>
+          <p class="rise d-3" style="background: linear-gradient(135deg, #5b6cff, #a259ff, #ff6b9d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 500; font-size: 14px;">
+            Kadir Can Aparı tarafından geliştirilen YKS & KPSS Sınav Destek Asistanı
+          </p>
+        </header>
+
+        <!-- Hata/Bilgi şeridi -->
+        <div class="alert-x" id="register-alert" role="alert">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span id="register-alert-text"></span>
+        </div>
+
+        <form id="register-form" novalidate class="rise d-4">
+          
+          <!-- Kullanıcı Adı -->
+          <div class="field">
+            <label for="reg-username">Kullanıcı adı</label>
+            <div class="input-icon">
+              <input class="input" type="text" id="reg-username" name="username"
+                     autocomplete="username" placeholder="kullanici.adi" required />
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <p class="hint">Küçük harf, rakam, nokta, tire ve alt çizgi kullanabilirsin.</p>
+          </div>
+
+          <!-- E-posta -->
+          <div class="field">
+            <label for="reg-email">E-posta adresi</label>
+            <div class="input-icon">
+              <input class="input" type="email" id="reg-email" name="email"
+                     autocomplete="email" placeholder="ornek@gmail.com" required />
+              <i class="fa-solid fa-envelope"></i>
+            </div>
+            <p class="hint">Sadece Gmail, Hotmail ve Yandex adresleri kabul edilir.</p>
+          </div>
+
+          <!-- Ad Soyad -->
+          <div class="field">
+            <label for="reg-fullname">Ad Soyad</label>
+            <div class="input-icon">
+              <input class="input" type="text" id="reg-fullname" name="fullname"
+                     autocomplete="name" placeholder="Ad Soyad" required />
+              <i class="fa-solid fa-id-card"></i>
+            </div>
+          </div>
+
+          <!-- Yaş -->
+          <div class="field">
+            <label for="reg-age">Yaş</label>
+            <div class="input-icon">
+              <input class="input" type="number" id="reg-age" name="age"
+                     min="10" max="99" placeholder="18" required />
+              <i class="fa-solid fa-cake-candles"></i>
+            </div>
+          </div>
+
+          <!-- Sınav Alanı -->
+          <div class="field">
+            <label for="reg-field">Sınav alanı</label>
+            <div class="input-icon">
+              <select class="select" id="reg-field" name="field">
+                <option value="sayisal">Sayısal</option>
+                <option value="esit-agirlik">Eşit Ağırlık</option>
+                <option value="sozel">Sözel</option>
+              </select>
+              <i class="fa-solid fa-book"></i>
+            </div>
+          </div>
+
+          <!-- Şifre -->
+          <div class="field">
+            <label for="reg-password">Şifre</label>
+            <div class="input-icon">
+              <input class="input" type="password" id="reg-password" name="password"
+                     autocomplete="new-password" placeholder="en az 4 karakter" required />
+              <i class="fa-solid fa-lock"></i>
+              <button type="button" class="toggle-eye" data-toggle-password="reg-password"
+                      aria-label="Şifreyi göster">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Şifre Tekrar -->
+          <div class="field">
+            <label for="reg-password-again">Şifre tekrar</label>
+            <div class="input-icon">
+              <input class="input" type="password" id="reg-password-again" name="passwordAgain"
+                     autocomplete="new-password" placeholder="şifreyi tekrar gir" required />
+              <i class="fa-solid fa-lock"></i>
+              <button type="button" class="toggle-eye" data-toggle-password="reg-password-again"
+                      aria-label="Şifreyi göster">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Açıklama (İsteğe Bağlı) -->
+          <div class="field">
+            <label for="reg-description">Hakkında (opsiyonel)</label>
+            <textarea class="textarea" id="reg-description" name="description"
+                      placeholder="Hedef bölüm, çalışma düzeni, kaçıncı yıl..."></textarea>
+          </div>
+
+          <!-- Davet kodu.
+               supabase/davet-kodu.sql çalıştırılmadıysa sunucu bu alanı
+               yok sayar ve kayıt normal ilerler. Çalıştırıldıysa kod
+               zorunlu olur ve veritabanında doğrulanır. -->
+          <div class="field">
+            <label for="reg-invite">Davet kodu</label>
+            <div class="input-icon">
+              <input class="input" type="text" id="reg-invite" name="inviteCode"
+                     autocomplete="off" spellcheck="false"
+                     placeholder="Sana verilen kod" />
+              <i class="fa-solid fa-ticket"></i>
+            </div>
+            <p class="hint">Kodun yoksa grubu yöneten kişiden iste.</p>
+          </div>
+
+          <button type="submit" class="btn-x btn-primary-x btn-block" id="register-submit">
+            <i class="fa-solid fa-paper-plane"></i>
+            Kayıt ol
+          </button>
+        </form>
+
+        <p class="faint text-center mt-3 mb-0 rise d-5">
+          Zaten hesabın var mı? <a href="index.html" class="gate-link" style="display:inline">Giriş yap</a>
+        </p>
+      </div>
+
+      <p class="auth-foot">Bay Porsuk · v1.0</p>
+    </section>
+
+    <!-- Başarı ekranı -->
+    <section id="panel-success" class="panel">
+      <div class="auth-card glass">
+        <div class="gate-head">
+          <div class="lock" style="background:linear-gradient(135deg,#10b981,#059669)">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <h2>Başvurun alındı!</h2>
+          <p class="muted mb-0" style="font-size:13px">
+            Admin onayladıktan sonra giriş yapabileceksin.
+          </p>
+        </div>
+
+        <div class="d-flex flex-column gap-2 mt-4">
+          <a href="index.html" class="btn-x btn-primary-x btn-block">
+            <i class="fa-solid fa-arrow-left"></i> Giriş ekranına dön
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bildirim alanı -->
+  <div id="toast-area"></div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Önce çekirdek, sonra kayıt betiği -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="sb.js"></script>
+  <script src="script.js"></script>
+  <script src="register.js"></script>
+</body>
+</html>

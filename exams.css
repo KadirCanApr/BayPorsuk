@@ -1,0 +1,715 @@
+/* ============================================================
+   Aksiyom — exams.css
+   Deneme Sonuçları modülü stilleri
+   ============================================================ */
+
+/* ---------- 1) Sayfa Düzeni --------------------------------- */
+.exams-page {
+  min-height: 100dvh;
+  padding: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.exams-container {
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* ---------- 2) Üst Bar -------------------------------------- */
+.exams-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-radius: var(--r-lg);
+  margin-bottom: 24px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.header-title i {
+  font-size: 24px;
+  color: var(--brand);
+}
+
+.header-title h1 {
+  font-size: 22px;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- 3) Deneme Tipi Tabs ----------------------------- */
+.exam-tabs {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.exam-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex: 1;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.exam-tab i {
+  font-size: 18px;
+}
+
+.exam-tab:hover {
+  border-color: var(--brand);
+  background: rgba(91, 108, 255, 0.08);
+  color: var(--text);
+  transform: translateY(-2px);
+}
+
+.exam-tab.active {
+  background: linear-gradient(135deg, rgba(91, 108, 255, 0.15), rgba(162, 89, 255, 0.1));
+  border-color: var(--brand);
+  color: var(--text);
+  box-shadow: 0 4px 16px rgba(91, 108, 255, 0.3);
+}
+
+.tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 12px;
+  background: rgba(91, 108, 255, 0.2);
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.exam-tab.active .tab-count {
+  background: var(--brand);
+  color: #fff;
+}
+
+/* ---------- 4) İstatistik Kartları -------------------------- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card-exam {
+  padding: 20px;
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.25s;
+}
+
+.stat-card-exam:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand);
+  box-shadow: 0 8px 24px rgba(91, 108, 255, 0.2);
+}
+
+.stat-card-exam .label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+  margin-bottom: 8px;
+}
+
+.stat-card-exam .value {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-card-exam .icon {
+  float: right;
+  font-size: 24px;
+  color: var(--brand);
+  opacity: 0.4;
+}
+
+/* Son net kartındaki fark rozeti ve başarı notu */
+.stat-card-exam .stat-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stat-card-exam .stat-delta.up {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.stat-card-exam .stat-delta.down {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.stat-card-exam .stat-delta.flat {
+  background: rgba(107, 114, 128, 0.15);
+  color: #9ca3af;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+.stat-card-exam .stat-note {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+/* ---------- 4b) Araç Çubuğu -------------------------------- */
+.exams-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--r-lg);
+  margin-bottom: 20px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  flex-wrap: wrap;
+}
+
+.exams-toolbar .toolbar-search {
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
+.exams-toolbar .toolbar-sort {
+  flex: 0 1 220px;
+}
+
+.exams-toolbar .toolbar-count {
+  font-size: 13px;
+  color: var(--faint);
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+/* ---------- 5) Deneme Listesi ------------------------------- */
+.exams-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.exam-card {
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: all 0.25s;
+}
+
+.exam-card:hover {
+  border-color: var(--brand);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(91, 108, 255, 0.2);
+}
+
+.exam-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, rgba(91, 108, 255, 0.08), rgba(162, 89, 255, 0.05));
+  border-bottom: 1px solid var(--stroke);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.exam-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.exam-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.exam-type-badge.tyt {
+  background: rgba(91, 108, 255, 0.15);
+  color: #a5b4ff;
+  border: 1px solid rgba(91, 108, 255, 0.3);
+}
+
+.exam-type-badge.ayt {
+  background: rgba(162, 89, 255, 0.15);
+  color: #c9a4ff;
+  border: 1px solid rgba(162, 89, 255, 0.3);
+}
+
+.exam-type-badge.kpss {
+  background: rgba(255, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(255, 158, 11, 0.3);
+}
+
+.exam-card-info {
+  flex: 1;
+}
+
+.exam-card-info h3 {
+  font-size: 18px;
+  margin: 0 0 4px;
+  font-weight: 600;
+}
+
+.exam-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.exam-card-meta i {
+  color: var(--brand);
+  margin-right: 4px;
+}
+
+/* Bir önceki denemeye göre fark */
+.exam-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.exam-delta i { margin-right: 0; }
+
+.exam-delta.up {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.exam-delta.up i { color: #34d399; }
+
+.exam-delta.down {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.exam-delta.down i { color: #f87171; }
+
+.exam-delta.flat,
+.exam-delta.first {
+  background: rgba(107, 114, 128, 0.15);
+  color: #9ca3af;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+.exam-delta.flat i { color: #9ca3af; }
+
+.exam-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.exam-card-body {
+  padding: 24px;
+}
+
+.subjects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.subject-item {
+  padding: 12px;
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--stroke);
+  text-align: center;
+}
+
+.subject-item .name {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+  margin-bottom: 6px;
+}
+
+.subject-item .net {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+.subject-item .correct {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* En güçlü / en zayıf ders — soru sayısına oranla belirlenir */
+.subject-item.best {
+  border-color: rgba(16, 185, 129, 0.45);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.subject-item.best .net { color: #34d399; }
+
+.subject-item.worst {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.07);
+}
+
+.subject-item.worst .net { color: #f87171; }
+
+.exam-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, rgba(91, 108, 255, 0.12), rgba(162, 89, 255, 0.08));
+  border: 1px solid rgba(91, 108, 255, 0.3);
+  margin-top: 16px;
+}
+
+.exam-total .label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.exam-total .value {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--brand);
+  letter-spacing: -0.02em;
+}
+
+.exam-notes {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.025);
+  border-left: 3px solid var(--brand);
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.exam-notes strong {
+  display: block;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+/* ---------- 6) Boş Durum ------------------------------------ */
+.empty-exams {
+  text-align: center;
+  padding: 80px 24px;
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px dashed var(--stroke-strong);
+  backdrop-filter: blur(12px);
+}
+
+.empty-exams i {
+  font-size: 48px;
+  color: var(--brand);
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-exams h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.empty-exams p {
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+/* ---------- 7) Modal Özel Stiller --------------------------- */
+#subjects-container {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--stroke);
+}
+
+/* Sınavdaki üst başlık kutusu (Fen Bilimleri, Sosyal Bilimler…) */
+.subject-group { margin-bottom: 14px; }
+
+.subject-group.has-head {
+  padding: 14px 14px 4px;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--stroke);
+}
+
+.subject-group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--stroke);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.subject-group-head .faint { font-weight: 400; }
+
+.subject-group-head .group-net {
+  margin-left: auto;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(91, 108, 255, 0.16);
+  border: 1px solid rgba(91, 108, 255, 0.3);
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.subject-input-group {
+  margin-bottom: 12px;
+}
+
+.subject-input-group .subject-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.subject-input-group .subject-label i {
+  color: var(--brand);
+  margin-right: 4px;
+  width: 16px;
+  text-align: center;
+}
+
+.subject-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.subject-inputs .input-small {
+  text-align: center;
+  font-weight: 500;
+}
+
+.subject-inputs label {
+  font-size: 11px;
+  color: var(--faint);
+  margin-bottom: 4px;
+  text-align: center;
+  display: block;
+}
+
+.subjects-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.subjects-heading i { color: var(--brand); }
+
+.subjects-heading .faint { font-weight: 400; }
+
+/* Net alanı eksiye düşerse görünür olsun */
+.subject-inputs .net-output.negative { color: #f87171; }
+
+/* Pencere içindeki canlı toplam şeridi */
+.modal-totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, rgba(91, 108, 255, 0.12), rgba(162, 89, 255, 0.08));
+  border: 1px solid rgba(91, 108, 255, 0.3);
+}
+
+.modal-total-item {
+  text-align: center;
+}
+
+.modal-total-item .label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+  margin-bottom: 4px;
+}
+
+.modal-total-item .value {
+  display: block;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.modal-total-item .value small {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--faint);
+}
+
+.modal-total-item .value.ok { color: #34d399; }
+.modal-total-item .value.bad { color: #f87171; }
+
+.modal-total-item.strong .value { color: var(--brand); }
+
+/* Silme onayında hangi denemenin gittiği yazsın */
+.delete-target {
+  padding: 12px 14px;
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--danger);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* ---------- 8) Responsive ----------------------------------- */
+@media (max-width: 768px) {
+  .exams-page {
+    padding: 20px 16px;
+  }
+
+  .exams-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-title {
+    justify-content: center;
+  }
+
+  .exam-tabs {
+    flex-direction: column;
+  }
+
+  .exam-tab {
+    min-width: 100%;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .subjects-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+
+  .subject-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .exam-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .exam-card-actions {
+    width: 100%;
+  }
+
+  .exam-card-actions .btn-x {
+    flex: 1;
+  }
+
+  .exams-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .exams-toolbar .toolbar-sort,
+  .exams-toolbar .btn-x {
+    width: 100%;
+  }
+
+  .exams-toolbar .toolbar-count {
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .modal-totals {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

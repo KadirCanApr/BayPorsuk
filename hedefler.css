@@ -1,0 +1,1168 @@
+/* ============================================================
+   Aksiyom — hedefler.css
+   Hedefler modülü: takvim, gün paneli, hedef kartları ve
+   gelişmiş hedef penceresi.
+   ============================================================ */
+
+/* ---------- 1) Sayfa Düzeni --------------------------------- */
+.goals-page {
+  min-height: 100dvh;
+  padding: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.goals-container {
+  width: 100%;
+  max-width: 1240px;
+}
+
+.is-hidden { display: none !important; }
+
+/* ---------- 2) Üst Bar -------------------------------------- */
+.goals-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-radius: var(--r-lg);
+  margin-bottom: 24px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.goals-header .header-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 210px;
+}
+
+.goals-header .header-title > i {
+  font-size: 24px;
+  color: var(--brand);
+}
+
+.goals-header .header-title h1 {
+  font-size: 22px;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.header-sub {
+  display: block;
+  font-size: 12.5px;
+  color: var(--faint);
+}
+
+.goals-header .header-side {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Kesintisiz gün serisi rozeti */
+.streak-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 192, 70, 0.12);
+  border: 1px solid rgba(255, 192, 70, 0.3);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.streak-chip i { color: var(--warn); }
+.streak-chip b { font-weight: 600; }
+
+/* Seri kopmuşsa rozet sönükleşir */
+.streak-chip.cold {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--stroke);
+  color: var(--muted);
+}
+.streak-chip.cold i { color: var(--faint); }
+
+.btn-x.icon-btn { padding: 10px 14px; }
+
+/* ---------- 3) İstatistik Kartları -------------------------- */
+.goal-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.goal-stat-card {
+  position: relative;
+  padding: 20px;
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+
+.goal-stat-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--brand);
+  box-shadow: 0 8px 24px rgba(91, 108, 255, 0.2);
+}
+
+.goal-stat-card .stat-icon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 22px;
+  color: var(--brand);
+  opacity: 0.35;
+}
+
+.goal-stat-card .stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+  margin-bottom: 8px;
+  padding-right: 34px;
+}
+
+.goal-stat-card .stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.goal-stat-card .stat-value small {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--faint);
+}
+
+.goal-stat-card .stat-note {
+  margin-top: 6px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* İnce ilerleme şeridi (bugün / ay kartları) */
+.goal-stat-card .stat-bar {
+  margin-top: 12px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.goal-stat-card .stat-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.goal-stat-card.tone-ok .stat-icon { color: var(--ok); }
+.goal-stat-card.tone-ok .stat-value { color: #8ceed3; }
+.goal-stat-card.tone-ok .stat-bar span { background: linear-gradient(90deg, var(--ok), #6ee7c8); }
+
+.goal-stat-card.tone-warn .stat-icon { color: var(--warn); }
+.goal-stat-card.tone-warn .stat-value { color: #ffd98a; }
+
+.goal-stat-card.tone-danger .stat-icon { color: var(--danger); }
+.goal-stat-card.tone-danger .stat-value { color: #ffb3c2; }
+
+/* ---------- 4) Filtre Sekmeleri ----------------------------- */
+.goal-tabs {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+.goal-tab {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 18px;
+  border: 1px solid var(--stroke);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex: 1;
+  min-width: 132px;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.goal-tab i { font-size: 15px; }
+
+.goal-tab:hover {
+  border-color: var(--brand);
+  background: rgba(91, 108, 255, 0.08);
+  color: var(--text);
+  transform: translateY(-2px);
+}
+
+.goal-tab.active {
+  background: linear-gradient(135deg, rgba(91, 108, 255, 0.15), rgba(162, 89, 255, 0.1));
+  border-color: var(--brand);
+  color: var(--text);
+  box-shadow: 0 4px 16px rgba(91, 108, 255, 0.3);
+}
+
+.goal-tab .tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: rgba(91, 108, 255, 0.2);
+  color: var(--brand);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.goal-tab.active .tab-count { background: var(--brand); color: #fff; }
+
+/* Geciken sekmesi dolu olduğunda dikkat çeker */
+.goal-tab.danger.has-items { border-color: rgba(255, 92, 122, 0.4); color: #ffb3c2; }
+.goal-tab.danger.has-items i { color: var(--danger); }
+.goal-tab.danger.has-items .tab-count { background: rgba(255, 92, 122, 0.2); color: #ffb3c2; }
+.goal-tab.danger.active { background: linear-gradient(135deg, rgba(255, 92, 122, 0.16), rgba(255, 92, 122, 0.06)); }
+.goal-tab.danger.active .tab-count { background: var(--danger); color: #fff; }
+
+/* ---------- 5) Araç Çubuğu ---------------------------------- */
+.goals-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--r-lg);
+  margin-bottom: 20px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  flex-wrap: wrap;
+}
+
+.goals-toolbar .toolbar-search { flex: 1 1 240px; min-width: 190px; }
+.goals-toolbar .toolbar-select { flex: 0 1 200px; }
+
+.goals-toolbar .toolbar-count {
+  font-size: 13px;
+  color: var(--faint);
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.view-switch {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--stroke);
+}
+
+.view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+
+.view-btn:hover { color: var(--text); }
+
+.view-btn.active {
+  background: linear-gradient(120deg, var(--brand), var(--brand-2));
+  color: #fff;
+}
+
+/* ---------- 6) Takvim + Gün Paneli -------------------------- */
+.goals-main {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 24px;
+  align-items: start;
+}
+
+.calendar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--stroke);
+}
+
+.calendar-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+/* Ay özeti şeridi */
+.month-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, rgba(91, 108, 255, 0.1), rgba(162, 89, 255, 0.06));
+  border: 1px solid rgba(91, 108, 255, 0.25);
+  font-size: 12.5px;
+  color: var(--muted);
+  flex-wrap: wrap;
+}
+
+.month-summary .ms-text { white-space: nowrap; }
+.month-summary .ms-text strong { color: var(--text); font-weight: 600; }
+
+.month-summary .ms-bar {
+  flex: 1 1 140px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  min-width: 120px;
+}
+
+.month-summary .ms-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.month-summary .ms-pct {
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-day-header {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+  padding: 6px 4px;
+  text-transform: uppercase;
+}
+
+.calendar-day {
+  position: relative;
+  min-height: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform var(--t-fast), background var(--t-fast), border-color var(--t-fast);
+  padding: 9px 6px 8px;
+  overflow: hidden;
+}
+
+.calendar-day:hover {
+  background: rgba(91, 108, 255, 0.14);
+  border-color: rgba(91, 108, 255, 0.35);
+  transform: translateY(-2px);
+}
+
+.calendar-day.other-month { opacity: 0.28; cursor: default; }
+.calendar-day.other-month:hover { transform: none; background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.05); }
+
+.calendar-day.today {
+  border-color: var(--brand);
+  background: rgba(91, 108, 255, 0.13);
+}
+
+.calendar-day.today .calendar-day-number { font-weight: 700; color: var(--text); }
+
+.calendar-day.selected {
+  border-color: var(--brand);
+  background: linear-gradient(135deg, rgba(91, 108, 255, 0.3), rgba(162, 89, 255, 0.18));
+  box-shadow: 0 8px 22px rgba(91, 108, 255, 0.28);
+}
+
+/* Günün tüm hedefleri bitmişse yeşil, geciken varsa kırmızı ton */
+.calendar-day.all-done {
+  border-color: rgba(47, 212, 167, 0.45);
+  background: rgba(47, 212, 167, 0.1);
+}
+
+.calendar-day.overdue {
+  border-color: rgba(255, 92, 122, 0.4);
+  background: rgba(255, 92, 122, 0.08);
+}
+
+.calendar-day.selected.all-done,
+.calendar-day.selected.overdue {
+  background: linear-gradient(135deg, rgba(91, 108, 255, 0.3), rgba(162, 89, 255, 0.18));
+}
+
+.calendar-day-number {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.calendar-day.selected .calendar-day-number { color: #fff; }
+
+/* Gün içindeki öncelik noktaları */
+.day-dots {
+  display: flex;
+  gap: 3px;
+  min-height: 6px;
+  align-items: center;
+}
+
+.day-dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  display: block;
+}
+
+.day-dots i.high { background: var(--danger); }
+.day-dots i.medium { background: var(--warn); }
+.day-dots i.low { background: var(--ok); }
+.day-dots i.more {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  font-size: 9px;
+  font-style: normal;
+  color: var(--faint);
+  line-height: 1;
+}
+
+/* Gün ilerleme çubuğu */
+.day-bar {
+  width: 78%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  margin-top: auto;
+}
+
+.day-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+}
+
+.calendar-day.all-done .day-bar span { background: var(--ok); }
+.calendar-day.overdue .day-bar span { background: linear-gradient(90deg, var(--danger), #ff8fa3); }
+
+.day-check {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  font-size: 10px;
+  color: var(--ok);
+}
+
+.calendar-legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid var(--stroke);
+  font-size: 11.5px;
+  color: var(--faint);
+}
+
+.calendar-legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+.calendar-legend .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.calendar-legend .dot.high { background: var(--danger); }
+.calendar-legend .dot.medium { background: var(--warn); }
+.calendar-legend .dot.low { background: var(--ok); }
+.calendar-legend .dot.done { background: rgba(47, 212, 167, 0.35); box-shadow: 0 0 0 3px rgba(47, 212, 167, 0.14); }
+.calendar-legend .legend-hint { margin-left: auto; }
+
+/* ---------- 7) Gün Paneli ----------------------------------- */
+.goals-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding-left: 24px;
+  border-left: 1px solid var(--stroke);
+}
+
+.day-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--stroke);
+}
+
+.day-head-text { min-width: 0; }
+
+.day-head-text h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.day-head-sub {
+  display: block;
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Günün tamamlanma halkası */
+.day-ring {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+}
+
+.day-ring svg { transform: rotate(-90deg); display: block; }
+.day-ring .ring-track { stroke: rgba(255, 255, 255, 0.08); }
+.day-ring .ring-fill {
+  stroke: url(#ringGrad);
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.day-ring .ring-text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.day-panel-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.day-panel-actions .btn-x { padding: 9px 14px; font-size: 13px; }
+
+.goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 620px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* ---------- 8) Hedef Kartı ---------------------------------- */
+.goal-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--stroke);
+  border-left: 3px solid var(--stroke);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  transition: transform var(--t-fast), background var(--t-fast), border-color var(--t-fast);
+  animation: rise 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.goal-card:hover {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(91, 108, 255, 0.35);
+  transform: translateY(-2px);
+}
+
+.goal-card.priority-high { border-left-color: var(--danger); }
+.goal-card.priority-medium { border-left-color: var(--warn); }
+.goal-card.priority-low { border-left-color: var(--ok); }
+
+.goal-card.completed { opacity: 0.62; }
+.goal-card.completed .goal-title { text-decoration: line-through; color: var(--muted); }
+.goal-card.completed:hover { opacity: 0.85; }
+
+.goal-card.is-overdue { background: rgba(255, 92, 122, 0.06); }
+
+.goal-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.goal-checkbox {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border: 2px solid var(--stroke-strong);
+  border-radius: 6px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all var(--t-fast);
+  margin-top: 2px;
+  background: transparent;
+  padding: 0;
+}
+
+.goal-checkbox:hover { border-color: var(--brand); background: rgba(91, 108, 255, 0.12); }
+
+.goal-checkbox.checked {
+  background: linear-gradient(120deg, var(--brand), var(--brand-2));
+  border-color: transparent;
+}
+
+.goal-checkbox i { font-size: 11px; color: #fff; opacity: 0; transition: opacity var(--t-fast); }
+.goal-checkbox.checked i { opacity: 1; }
+
+.goal-content { flex: 1; min-width: 0; }
+
+.goal-title {
+  font-size: 14.5px;
+  font-weight: 500;
+  margin: 0 0 3px;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.goal-description {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 0 0 8px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.goal-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.goal-action-btn {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--stroke);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all var(--t-fast);
+  color: var(--faint);
+  font-size: 11.5px;
+  padding: 0;
+}
+
+.goal-action-btn:hover { background: rgba(255, 255, 255, 0.1); color: var(--text); border-color: var(--stroke-strong); }
+.goal-action-btn.delete:hover { background: rgba(255, 92, 122, 0.15); border-color: rgba(255, 92, 122, 0.4); color: var(--danger); }
+
+/* Rozet satırı */
+.goal-meta {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: var(--faint);
+}
+
+.goal-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.goal-chip.high { background: rgba(255, 92, 122, 0.14); border-color: rgba(255, 92, 122, 0.32); color: #ffb3c2; }
+.goal-chip.medium { background: rgba(255, 192, 70, 0.13); border-color: rgba(255, 192, 70, 0.3); color: #ffd98a; }
+.goal-chip.low { background: rgba(47, 212, 167, 0.13); border-color: rgba(47, 212, 167, 0.3); color: #8ceed3; }
+.goal-chip.subject { background: rgba(91, 108, 255, 0.13); border-color: rgba(91, 108, 255, 0.3); color: #bcc4ff; }
+.goal-chip.repeat { background: rgba(162, 89, 255, 0.13); border-color: rgba(162, 89, 255, 0.32); color: #d9bcff; }
+.goal-chip.date { background: rgba(255, 255, 255, 0.05); }
+.goal-chip.overdue { background: rgba(255, 92, 122, 0.16); border-color: rgba(255, 92, 122, 0.4); color: #ffb3c2; }
+.goal-chip.auto { background: rgba(47, 212, 167, 0.12); border-color: rgba(47, 212, 167, 0.28); color: #8ceed3; }
+
+/* Ölçüt (sayaç) satırı */
+.goal-metric {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 9px 11px;
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--stroke);
+}
+
+.metric-bar {
+  flex: 1;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  min-width: 60px;
+}
+
+.metric-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.goal-card.completed .metric-bar span { background: var(--ok); }
+
+.metric-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.metric-value em { font-style: normal; color: var(--faint); font-weight: 400; }
+
+.metric-btns { display: flex; gap: 5px; }
+
+.metric-btn {
+  min-width: 30px;
+  height: 26px;
+  padding: 0 7px;
+  border-radius: 7px;
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.metric-btn:hover { background: rgba(91, 108, 255, 0.18); border-color: var(--brand); color: var(--text); }
+.metric-btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+
+/* Alt adımlar */
+.goal-steps {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.goal-step {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--muted);
+  transition: all var(--t-fast);
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
+}
+
+.goal-step:hover { background: rgba(255, 255, 255, 0.05); border-color: var(--stroke); color: var(--text); }
+
+.goal-step i {
+  font-size: 11px;
+  width: 14px;
+  color: var(--faint);
+  flex-shrink: 0;
+}
+
+.goal-step.done { color: var(--faint); }
+.goal-step.done span { text-decoration: line-through; }
+.goal-step.done i { color: var(--ok); }
+
+.steps-progress {
+  font-size: 11px;
+  color: var(--faint);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ---------- 9) Liste Görünümü ------------------------------- */
+.goals-listview {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.goal-group {
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px solid var(--stroke);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+}
+
+.goal-group-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(91, 108, 255, 0.09), rgba(162, 89, 255, 0.05));
+  border-bottom: 1px solid var(--stroke);
+  flex-wrap: wrap;
+}
+
+.goal-group-head i { color: var(--brand); }
+
+.goal-group-head h3 {
+  font-size: 15.5px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+.goal-group-head .group-count {
+  font-size: 12px;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.goal-group.tone-danger .goal-group-head {
+  background: linear-gradient(135deg, rgba(255, 92, 122, 0.12), rgba(255, 92, 122, 0.04));
+}
+.goal-group.tone-danger .goal-group-head i { color: var(--danger); }
+
+.goal-group.tone-ok .goal-group-head {
+  background: linear-gradient(135deg, rgba(47, 212, 167, 0.1), rgba(47, 212, 167, 0.03));
+}
+.goal-group.tone-ok .goal-group-head i { color: var(--ok); }
+
+.goal-group-body {
+  padding: 16px 20px 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px;
+}
+
+/* ---------- 10) Boş Durumlar -------------------------------- */
+.empty-goals {
+  text-align: center;
+  padding: 54px 24px;
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  border: 1px dashed var(--stroke-strong);
+}
+
+.empty-goals i {
+  font-size: 40px;
+  color: var(--brand);
+  opacity: 0.5;
+  margin-bottom: 14px;
+}
+
+.empty-goals h3 { font-size: 17px; margin-bottom: 6px; }
+.empty-goals p { color: var(--muted); font-size: 13.5px; margin-bottom: 18px; }
+
+/* Gün panelindeki küçük boş durum */
+.empty-day {
+  text-align: center;
+  padding: 30px 16px;
+  border-radius: var(--r-md);
+  border: 1px dashed var(--stroke);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.empty-day i { display: block; font-size: 26px; color: var(--brand); opacity: 0.45; margin-bottom: 10px; }
+
+.link-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+.link-btn:hover { color: var(--brand-2); }
+
+/* ---------- 11) Hedef Penceresi ----------------------------- */
+#goal-modal .modal-body { padding-top: 20px; }
+
+.form-block {
+  margin: 18px 0;
+  padding: 16px;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--stroke);
+}
+
+.form-block-head {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--stroke);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.form-block-head i { color: var(--brand); }
+.form-block-head .faint { font-weight: 400; font-size: 12px; }
+
+/* Öncelik / ölçüt seçicisi */
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.segmented-wide { grid-template-columns: repeat(4, 1fr); }
+
+.seg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 11px 8px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--stroke);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--t-fast);
+  white-space: nowrap;
+}
+
+.seg-btn i { font-size: 12px; }
+.seg-btn:hover { color: var(--text); border-color: var(--stroke-strong); }
+
+.seg-btn.active {
+  background: linear-gradient(135deg, rgba(91, 108, 255, 0.2), rgba(162, 89, 255, 0.12));
+  border-color: var(--brand);
+  color: var(--text);
+}
+
+.seg-btn.low i { color: var(--ok); }
+.seg-btn.medium i { color: var(--warn); }
+.seg-btn.high i { color: var(--danger); }
+
+.seg-btn.low.active { background: rgba(47, 212, 167, 0.14); border-color: rgba(47, 212, 167, 0.45); }
+.seg-btn.medium.active { background: rgba(255, 192, 70, 0.14); border-color: rgba(255, 192, 70, 0.45); }
+.seg-btn.high.active { background: rgba(255, 92, 122, 0.14); border-color: rgba(255, 92, 122, 0.45); }
+
+.metric-config {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 14px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.checkbox-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+  margin: 0;
+}
+
+.checkbox-line input { margin-top: 3px; accent-color: var(--brand); }
+.checkbox-line em { font-style: normal; font-size: 12px; }
+
+/* Adım düzenleyici */
+.steps-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.steps-editor:empty { display: none; }
+
+.step-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--stroke);
+  font-size: 13px;
+}
+
+.step-row .step-order {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: rgba(91, 108, 255, 0.18);
+  color: var(--brand);
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.step-row .step-text { flex: 1; min-width: 0; word-break: break-word; }
+
+.step-row .step-del {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--faint);
+  cursor: pointer;
+  transition: all var(--t-fast);
+  flex-shrink: 0;
+}
+
+.step-row .step-del:hover {
+  background: rgba(255, 92, 122, 0.14);
+  border-color: rgba(255, 92, 122, 0.4);
+  color: var(--danger);
+}
+
+.step-add {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.step-add .input-icon { flex: 1; }
+
+/* ---------- 12) Responsive ---------------------------------- */
+@media (max-width: 1080px) {
+  .goals-main { grid-template-columns: 1fr; }
+
+  .goals-sidebar {
+    padding-left: 0;
+    border-left: 0;
+    padding-top: 20px;
+    border-top: 1px solid var(--stroke);
+  }
+
+  .goals-list { max-height: none; }
+}
+
+@media (max-width: 768px) {
+  .goals-page { padding: 20px 16px; }
+
+  .goals-header { flex-direction: column; align-items: stretch; }
+  .goals-header .header-title { justify-content: center; text-align: center; }
+  .goals-header .header-side { justify-content: center; }
+
+  .goal-tabs { flex-direction: column; }
+  .goal-tab { min-width: 100%; }
+
+  .goal-stats { grid-template-columns: 1fr; }
+
+  .goals-toolbar { flex-direction: column; align-items: stretch; }
+  .goals-toolbar .toolbar-select,
+  .goals-toolbar .view-switch { width: 100%; }
+  .goals-toolbar .view-btn { flex: 1; }
+  .goals-toolbar .toolbar-count { margin-left: 0; text-align: center; }
+
+  .goals-main { padding: 16px; }
+  .calendar-grid { gap: 5px; }
+  .calendar-day { min-height: 58px; padding: 7px 3px 6px; }
+  .calendar-day-number { font-size: 12.5px; }
+  .day-bar { width: 84%; }
+  .calendar-legend .legend-hint { display: none; }
+
+  .segmented, .segmented-wide { grid-template-columns: repeat(2, 1fr); }
+  .metric-config { grid-template-columns: 1fr; }
+
+  .goal-group-body { grid-template-columns: 1fr; padding: 14px 14px 18px; }
+}

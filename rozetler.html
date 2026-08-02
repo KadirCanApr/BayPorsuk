@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rozetler · Bay Porsuk</title>
+  <meta name="description" content="Çalışma, deneme, müfredat, hedef ve günlük kayıtlarından kazanılan başarı rozetleri." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <!-- Üst bar, boş durum ve başlık stilleri modül sayfalarında ortak -->
+  <link rel="stylesheet" href="exams.css" />
+  <link rel="stylesheet" href="rozetler.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="sb.js"></script>
+  <script src="script.js"></script>
+  <!-- Müfredat kataloğu: "bir dersin tüm konularını bitir" rozeti için -->
+  <script src="konular.js"></script>
+  <script>
+    /* Oturum kontrolü hazır kapısında yapılır: Supabase oturumu
+       asenkron geldiği için sayfa çizilir çizilmez bakılamaz.
+       Karar verilene kadar sayfa gizli tutulur ki yetkisiz kullanıcı
+       içeriği bir an bile görmesin. */
+    document.documentElement.style.visibility = "hidden";
+    window.YKS.hazir(function () {
+      if (!window.YKS.Auth.isLoggedIn()) {
+        window.location.replace("index.html");
+        return;
+      }
+      document.documentElement.style.visibility = "";
+    });
+  </script>
+</head>
+
+<body>
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <div class="rozet-page">
+    <div class="rozet-container">
+
+      <!-- ================================================
+           ÜST BAR
+           ================================================ -->
+      <div class="rozet-header glass">
+        <button type="button" class="btn-x btn-ghost-x" id="back-btn">
+          <i class="fa-solid fa-arrow-left"></i> Geri Dön
+        </button>
+
+        <div class="header-title">
+          <i class="fa-solid fa-award"></i>
+          <h1>Rozetler</h1>
+        </div>
+
+        <a class="btn-x btn-ghost-x" href="istatistik.html">
+          <i class="fa-solid fa-chart-pie"></i> İstatistikler
+        </a>
+      </div>
+
+      <!-- ================================================
+           ÖZET ŞERİDİ
+           ================================================ -->
+      <div class="rozet-stats" id="rozet-stats"></div>
+
+      <!-- ================================================
+           GRUP SÜZGECİ
+           ================================================ -->
+      <div class="rozet-groups glass" id="rozet-groups"></div>
+
+      <!-- ================================================
+           DURUM SÜZGECİ
+           ================================================ -->
+      <div class="rozet-toolbar glass">
+        <select class="select toolbar-state" id="rozet-state" aria-label="Durum süzgeci">
+          <option value="all">Tüm rozetler</option>
+          <option value="earned">Yalnızca kazanılanlar</option>
+          <option value="locked">Yalnızca kilitliler</option>
+        </select>
+
+        <span class="toolbar-count" id="rozet-count">—</span>
+      </div>
+
+      <!-- ================================================
+           ROZET IZGARASI
+           ================================================ -->
+      <div class="rozet-grid" id="rozet-grid"></div>
+
+    </div>
+  </div>
+
+  <div id="toast-area"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="rozetler.js"></script>
+</body>
+</html>

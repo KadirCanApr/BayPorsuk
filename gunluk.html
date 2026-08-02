@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Günlüğüm · Bay Porsuk</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
+  <!-- Üst bar, boş durum ve istatistik kartları modül sayfalarında ortak -->
+  <link rel="stylesheet" href="exams.css" />
+  <link rel="stylesheet" href="gunluk.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="sb.js"></script>
+  <script src="script.js"></script>
+  <script>
+    /* Oturum kontrolü hazır kapısında yapılır: Supabase oturumu
+       asenkron geldiği için sayfa çizilir çizilmez bakılamaz.
+       Karar verilene kadar sayfa gizli tutulur ki yetkisiz kullanıcı
+       içeriği bir an bile görmesin. */
+    document.documentElement.style.visibility = "hidden";
+    window.YKS.hazir(function () {
+      if (!window.YKS.Auth.isLoggedIn()) {
+        window.location.replace("index.html");
+        return;
+      }
+      document.documentElement.style.visibility = "";
+    });
+  </script>
+</head>
+
+<body>
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <div class="gunluk-page">
+    <div class="gunluk-container">
+
+      <!-- ================================================
+           ÜST BAR
+           ================================================ -->
+      <div class="gunluk-header glass">
+        <button type="button" class="btn-x btn-ghost-x" id="back-btn">
+          <i class="fa-solid fa-arrow-left"></i> Geri Dön
+        </button>
+
+        <div class="header-title">
+          <i class="fa-solid fa-feather-pointed"></i>
+          <h1>Günlüğüm</h1>
+        </div>
+
+        <button type="button" class="btn-x btn-primary-x" id="new-btn">
+          <i class="fa-solid fa-pen-nib"></i> Bugünü yaz
+        </button>
+      </div>
+
+      <!-- ================================================
+           ÖZET ŞERİDİ
+           ================================================ -->
+      <div class="gunluk-stats" id="gunluk-stats"></div>
+
+      <!-- ================================================
+           ARAMA VE SÜZGEÇLER
+           ================================================ -->
+      <div class="gunluk-toolbar glass">
+        <div class="input-icon toolbar-search">
+          <input class="input" type="search" id="gunluk-search"
+                 placeholder="Başlık, ders veya yazdıklarında ara" />
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+
+        <select class="select toolbar-month" id="gunluk-month" aria-label="Ay süzgeci">
+          <option value="">Tüm aylar</option>
+        </select>
+
+        <select class="select toolbar-sort" id="gunluk-sort" aria-label="Sıralama">
+          <option value="date-desc">Yeniden eskiye</option>
+          <option value="date-asc">Eskiden yeniye</option>
+        </select>
+
+        <span class="toolbar-count" id="gunluk-count">—</span>
+      </div>
+
+      <!-- ================================================
+           GÜNLÜK SAYFALARI
+           ================================================ -->
+      <div class="gunluk-list" id="gunluk-list"></div>
+
+    </div>
+  </div>
+
+  <!-- ================================================
+       GÜNLÜK YAZMA / DÜZENLEME
+       ================================================ -->
+  <div class="modal fade" id="gunluk-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="gunluk-modal-title">
+            <i class="fa-solid fa-pen-nib"></i> Bugünün günlüğü
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+        </div>
+
+        <div class="modal-body">
+          <form id="gunluk-form" novalidate>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="g-date">Tarih</label>
+                <div class="input-icon">
+                  <input class="input" type="date" id="g-date" required />
+                  <i class="fa-solid fa-calendar-day"></i>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="g-minutes">Çalışma süresi (dakika)</label>
+                <div class="input-icon">
+                  <input class="input" type="number" id="g-minutes" min="0" max="1440"
+                         step="5" placeholder="örn: 240" />
+                  <i class="fa-solid fa-stopwatch"></i>
+                </div>
+                <p class="hint">Boş bırakabilirsin.</p>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Bugün nasıldı?</label>
+              <div class="mood-picker" id="g-mood-picker" role="radiogroup" aria-label="Ruh hali">
+                <button type="button" class="mood-btn" data-mood="harika">
+                  <span class="mood-face">😄</span><span>Harika</span>
+                </button>
+                <button type="button" class="mood-btn active" data-mood="iyi">
+                  <span class="mood-face">🙂</span><span>İyi</span>
+                </button>
+                <button type="button" class="mood-btn" data-mood="normal">
+                  <span class="mood-face">😐</span><span>Normal</span>
+                </button>
+                <button type="button" class="mood-btn" data-mood="yorgun">
+                  <span class="mood-face">😴</span><span>Yorgun</span>
+                </button>
+                <button type="button" class="mood-btn" data-mood="kotu">
+                  <span class="mood-face">😔</span><span>Kötü</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="g-title">Başlık</label>
+              <div class="input-icon">
+                <input class="input" type="text" id="g-title" maxlength="120"
+                       placeholder="örn: Matematik günü" />
+                <i class="fa-solid fa-heading"></i>
+              </div>
+              <p class="hint">Boş bırakırsan tarih başlık olur.</p>
+            </div>
+
+            <div class="field">
+              <label for="g-subjects">Bugün çalıştığın dersler</label>
+              <div class="input-icon">
+                <input class="input" type="text" id="g-subjects" maxlength="200"
+                       placeholder="Matematik, Fizik, Türkçe" />
+                <i class="fa-solid fa-book"></i>
+              </div>
+              <p class="hint">Virgülle ayır; etiket olarak görünür.</p>
+            </div>
+
+            <div class="field">
+              <label for="g-body">Günün notu</label>
+              <textarea class="textarea gunluk-textarea" id="g-body" rows="9" maxlength="5000"
+                        placeholder="Bugün ne çalıştın, ne iyi gitti, nerede zorlandın, yarın ne yapacaksın..."></textarea>
+              <p class="hint"><span id="g-body-count">0</span> / 5000 karakter · satır sonları korunur</p>
+            </div>
+
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-x btn-ghost-x" data-bs-dismiss="modal">İptal</button>
+          <button type="button" class="btn-x btn-primary-x" id="g-save">
+            <i class="fa-solid fa-floppy-disk"></i> Kaydet
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+       SİLME ONAYI
+       ================================================ -->
+  <div class="modal fade" id="gunluk-delete-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title">
+            <i class="fa-solid fa-triangle-exclamation"></i> Günlük sayfasını sil
+          </h5>
+        </div>
+        <div class="modal-body">
+          <p class="muted mb-2">Bu sayfa kalıcı olarak silinecek. Emin misin?</p>
+          <p class="delete-target mb-0" id="delete-gunluk-name">—</p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn-x btn-ghost-x" data-bs-dismiss="modal">Vazgeç</button>
+          <button type="button" class="btn-x btn-danger-x" id="g-delete-ok">
+            <i class="fa-solid fa-trash"></i> Sil
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-area"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="gunluk.js"></script>
+</body>
+</html>
