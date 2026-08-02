@@ -74,9 +74,18 @@
       };
 
       /* Temel kontroller */
-      if (!input.username || !input.email || !input.fullName || 
+      if (!input.username || !input.email || !input.fullName ||
           !input.age || !input.password || !input.passwordAgain) {
         showAlert("Lütfen tüm zorunlu alanları doldur.");
+        return;
+      }
+
+      /* Davet kodu.
+         Asıl doğrulama sunucudaki handle_new_user tetikleyicisinde —
+         buradaki kontrol yalnızca boş gönderip anlamsız bir sunucu
+         hatası almayı önlemek için. */
+      if (!input.inviteCode.trim()) {
+        showAlert("Davet kodu gerekli. Grubu yöneten kişiden iste.");
         return;
       }
 

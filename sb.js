@@ -82,6 +82,16 @@
     if (/rate limit|too many requests/i.test(m)) return "Çok fazla deneme yapıldı. Biraz bekle.";
     if (/duplicate key.*username/i.test(m)) return "Bu kullanıcı adı zaten alınmış.";
     if (/violates row-level security/i.test(m)) return "Bu işlem için yetkin yok.";
+
+    /* Davet kodu doğrulaması handle_new_user tetikleyicisinde yapılıyor.
+       Tetikleyici hata fırlattığında Supabase Auth bunu ham metniyle
+       değil "Database error saving new user" diye döndürüyor — kullanıcı
+       neyin yanlış olduğunu anlayamaz. Bu yüzden yönlendirici bir
+       karşılık veriyoruz. */
+    if (/Database error saving new user/i.test(m)) {
+      return "Kayıt tamamlanamadı. Davet kodunu kontrol et — " +
+             "kod yanlış, süresi dolmuş ya da kullanım sınırına ulaşmış olabilir.";
+    }
     if (/Failed to fetch|NetworkError/i.test(m)) return "Sunucuya ulaşılamadı. İnternetini kontrol et.";
     if (error.code === "PGRST205") return "Veritabanı şeması kurulmamış (supabase/schema.sql çalıştırılmalı).";
 
