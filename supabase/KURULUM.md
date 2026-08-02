@@ -105,16 +105,18 @@ sorsa bile veritabanı o satırı göndermez.
 
 ## 5. İlk admin hesabını yap
 
-1. Siteden normal şekilde kayıt ol, mailindeki bağlantıyı onayla
-2. Supabase → **Table Editor** → `profiles` tablosu
-3. Kendi satırını bul, `role` sütununu `uye` → `admin` yap → kaydet
+1. Siteden normal şekilde kayıt ol
+2. SQL Editor'de **`ilk-admin.sql`** dosyasını çalıştır
+   (içindeki kullanıcı adını kendi adınla değiştirmeyi unutma)
 
 Bundan sonra admin atamalarını site içinden yapabilirsin.
 
-> Bunu elle yapmak zorundasın çünkü şemadaki `profiles_guard_role`
-> tetikleyicisi kimsenin kendini admin yapmasını engelliyor —
-> ilk adminin dışarıdan konması gerekiyor. Kurulumdaki bu tek elle
-> adım, "kendini admin yapma" açığının tamamen kapalı olmasının bedeli.
+> **Table Editor'den elle değiştirmeye çalışma, işe yaramaz.**
+> `profiles_guard_role` tetikleyicisi rol değişimini `auth.uid()`
+> ile denetliyor; SQL/Table Editor'de oturum açmış kullanıcı
+> olmadığı için `auth.uid()` boş döner ve tetikleyici değişikliği
+> sessizce geri alır. `ilk-admin.sql` hem bu boşluğu düzeltiyor
+> hem de ilk admini atıyor. Ayrıntılı gerekçe dosyanın başında.
 
 ---
 

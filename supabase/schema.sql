@@ -639,9 +639,25 @@ create policy medya_delete on storage.objects
 -- RLS yayında da geçerlidir: kimse görme hakkı olmayan bir
 -- satırın değişikliğini almaz.
 -- ============================================================
-alter publication supabase_realtime add table public.posts;
-alter publication supabase_realtime add table public.post_likes;
-alter publication supabase_realtime add table public.post_comments;
-alter publication supabase_realtime add table public.messages;
-alter publication supabase_realtime add table public.friendships;
-alter publication supabase_realtime add table public.announcements;
+-- NOT: "alter publication ... add table" zaten ekli bir tabloda hata
+-- verir ve tüm betiği geri alır. Bu yüzden önce kontrol ediliyor —
+-- böylece dosya gerçekten tekrar çalıştırılabilir kalıyor.
+do $$
+declare
+  t text;
+begin
+  foreach t in array array[
+    'posts', 'post_likes', 'post_comments',
+    'messages', 'friendships', 'announcements'
+  ] loop
+    if not exists (
+      select 1 from pg_publication_tables
+      where pubname = 'supabase_realtime'
+        and schemaname = 'public'
+        and tablename = t
+    ) then
+      execute format('alter publication supabase_realtime add table public.%I', t);
+    end if;
+  end loop;
+end
+$$;
